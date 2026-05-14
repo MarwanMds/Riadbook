@@ -1,0 +1,379 @@
+# Arabic translations for RiadBook Maroc
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ar\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+
+# ── Navigation ──
+msgid "nav.home"
+msgstr "الرئيسية"
+
+msgid "nav.search"
+msgstr "بحث"
+
+msgid "nav.riads"
+msgstr "الرياضات المغربية"
+
+msgid "nav.backoffice"
+msgstr "لوحة الإدارة"
+
+msgid "nav.my_establishment"
+msgstr "منشأتي"
+
+msgid "nav.my_space"
+msgstr "مساحتي"
+
+msgid "nav.profile"
+msgstr "ملفي الشخصي"
+
+msgid "nav.logout"
+msgstr "تسجيل الخروج"
+
+msgid "nav.login"
+msgstr "تسجيل الدخول"
+
+msgid "nav.register"
+msgstr "إنشاء حساب"
+
+# ── Language switcher ──
+msgid "lang.switch"
+msgstr "اللغة"
+
+msgid "lang.fr"
+msgstr "Français"
+
+msgid "lang.ar"
+msgstr "العربية"
+
+msgid "lang.en"
+msgstr "English"
+
+# ── Homepage ──
+msgid "home.hero_title"
+msgstr "اكتشف المغرب الأصيل"
+
+msgid "home.hero_subtitle"
+msgstr "احجز أجمل الرياضات والفنادق في المغرب ببضع نقرات"
+
+msgid "home.search_placeholder_city"
+msgstr "المدينة أو المنطقة"
+
+msgid "home.search_checkin"
+msgstr "تاريخ الوصول"
+
+msgid "home.search_checkout"
+msgstr "تاريخ المغادرة"
+
+msgid "home.search_guests"
+msgstr "عدد المسافرين"
+
+msgid "home.search_button"
+msgstr "بحث"
+
+msgid "home.featured_riads"
+msgstr "رياضات مميزة"
+
+msgid "home.popular_cities"
+msgstr "المدن الشهيرة"
+
+msgid "home.why_riadbook"
+msgstr "لماذا ريادبوك؟"
+
+msgid "home.authentic_label"
+msgstr "منشآت أصيلة"
+
+msgid "home.authentic_desc"
+msgstr "رياضات معتمدة وفنادق مختارة بعناية"
+
+msgid "home.secure_booking"
+msgstr "حجز آمن"
+
+msgid "home.secure_desc"
+msgstr "عملية بسيطة في خطوتين، تأكيد عبر البريد الإلكتروني"
+
+msgid "home.local_support"
+msgstr "دعم محلي 7 أيام"
+
+msgid "home.local_desc"
+msgstr "فريق مغربي متاح من 8 صباحاً حتى 10 مساءً"
+
+# ── Search ──
+msgid "search.title"
+msgstr "نتائج البحث"
+
+msgid "search.filters"
+msgstr "الفلاتر"
+
+msgid "search.price_range"
+msgstr "السعر في الليلة"
+
+msgid "search.type"
+msgstr "نوع المنشأة"
+
+msgid "search.rating"
+msgstr "التقييم"
+
+msgid "search.amenities"
+msgstr "المرافق"
+
+msgid "search.style"
+msgstr "الأسلوب"
+
+msgid "search.free_cancel"
+msgstr "إلغاء مجاني فقط"
+
+msgid "search.no_results"
+msgstr "لم يتم العثور على منشآت"
+
+msgid "search.results_count"
+msgstr "منشأة موجودة"
+
+msgid "search.sort_by"
+msgstr "ترتيب حسب"
+
+msgid "search.sort_price_asc"
+msgstr "السعر تصاعدي"
+
+msgid "search.sort_price_desc"
+msgstr "السعر تنازلي"
+
+msgid "search.sort_rating"
+msgstr "الأعلى تقييماً"
+
+# ── Property types ──
+msgid "type.riad"
+msgstr "رياض"
+
+msgid "type.hotel"
+msgstr "فندق"
+
+msgid "type.guesthouse"
+msgstr "بيت ضيافة"
+
+# ── Amenities ──
+msgid "amenity.wifi"
+msgstr "واي فاي"
+
+msgid "amenity.pool"
+msgstr "مسبح"
+
+msgid "amenity.spa"
+msgstr "سبا"
+
+msgid "amenity.hammam"
+msgstr "حمام مغربي"
+
+msgid "amenity.parking"
+msgstr "موقف سيارات"
+
+msgid "amenity.breakfast"
+msgstr "الإفطار مشمول"
+
+# ── Property detail ──
+msgid "property.per_night"
+msgstr "في الليلة"
+
+msgid "property.book_now"
+msgstr "احجز الآن"
+
+msgid "property.rooms"
+msgstr "الغرف المتاحة"
+
+msgid "property.reviews"
+msgstr "آراء العملاء"
+
+msgid "property.location"
+msgstr "الموقع"
+
+msgid "property.description"
+msgstr "الوصف"
+
+msgid "property.authentic_riad"
+msgstr "رياض أصيل"
+
+msgid "property.verified_review"
+msgstr "تقييم موثق"
+
+msgid "property.no_reviews"
+msgstr "لا توجد تقييمات حتى الآن"
+
+msgid "property.write_review"
+msgstr "اكتب تقييماً"
+
+# ── Booking ──
+msgid "booking.title"
+msgstr "إتمام الحجز"
+
+msgid "booking.summary"
+msgstr "ملخص الحجز"
+
+msgid "booking.checkin"
+msgstr "تاريخ الوصول"
+
+msgid "booking.checkout"
+msgstr "تاريخ المغادرة"
+
+msgid "booking.guests"
+msgstr "المسافرون"
+
+msgid "booking.nights"
+msgstr "ليلة"
+
+msgid "booking.total"
+msgstr "المجموع"
+
+msgid "booking.taxes"
+msgstr "الضرائب والرسوم"
+
+msgid "booking.confirm"
+msgstr "تأكيد الحجز"
+
+msgid "booking.cancel"
+msgstr "إلغاء"
+
+msgid "booking.status_pending"
+msgstr "في الانتظار"
+
+msgid "booking.status_confirmed"
+msgstr "مؤكد"
+
+msgid "booking.status_cancelled"
+msgstr "ملغى"
+
+msgid "booking.status_completed"
+msgstr "مكتمل"
+
+msgid "booking.your_info"
+msgstr "بياناتك الشخصية"
+
+msgid "booking.full_name"
+msgstr "الاسم الكامل"
+
+msgid "booking.email"
+msgstr "البريد الإلكتروني"
+
+msgid "booking.phone"
+msgstr "رقم الهاتف"
+
+msgid "booking.special_requests"
+msgstr "طلبات خاصة"
+
+# ── Auth ──
+msgid "auth.login_title"
+msgstr "تسجيل الدخول"
+
+msgid "auth.register_title"
+msgstr "إنشاء حساب"
+
+msgid "auth.email"
+msgstr "البريد الإلكتروني"
+
+msgid "auth.password"
+msgstr "كلمة المرور"
+
+msgid "auth.confirm_password"
+msgstr "تأكيد كلمة المرور"
+
+msgid "auth.first_name"
+msgstr "الاسم الأول"
+
+msgid "auth.last_name"
+msgstr "اسم العائلة"
+
+msgid "auth.forgot_password"
+msgstr "نسيت كلمة المرور؟"
+
+msgid "auth.no_account"
+msgstr "ليس لديك حساب؟"
+
+msgid "auth.have_account"
+msgstr "لديك حساب بالفعل؟"
+
+msgid "auth.role_traveler"
+msgstr "مسافر"
+
+msgid "auth.role_owner"
+msgstr "مالك / مضيف"
+
+# ── Dashboard ──
+msgid "dashboard.title"
+msgstr "مساحتي"
+
+msgid "dashboard.upcoming_bookings"
+msgstr "الحجوزات القادمة"
+
+msgid "dashboard.past_bookings"
+msgstr "الإقامات السابقة"
+
+msgid "dashboard.favorites"
+msgstr "المفضلة"
+
+msgid "dashboard.reviews"
+msgstr "تقييماتي"
+
+msgid "dashboard.messages"
+msgstr "الرسائل"
+
+msgid "dashboard.settings"
+msgstr "الإعدادات"
+
+msgid "dashboard.no_bookings"
+msgstr "لا توجد حجوزات حتى الآن"
+
+# ── Footer ──
+msgid "footer.tagline"
+msgstr "المنصة المرجعية للرياضات والفنادق في المغرب"
+
+msgid "footer.links"
+msgstr "روابط مفيدة"
+
+msgid "footer.legal"
+msgstr "المعلومات القانونية"
+
+msgid "footer.privacy"
+msgstr "سياسة الخصوصية"
+
+msgid "footer.terms"
+msgstr "الشروط العامة"
+
+msgid "footer.contact"
+msgstr "التواصل"
+
+msgid "footer.copyright"
+msgstr "جميع الحقوق محفوظة"
+
+# ── Common ──
+msgid "common.save"
+msgstr "حفظ"
+
+msgid "common.cancel"
+msgstr "إلغاء"
+
+msgid "common.delete"
+msgstr "حذف"
+
+msgid "common.edit"
+msgstr "تعديل"
+
+msgid "common.back"
+msgstr "رجوع"
+
+msgid "common.loading"
+msgstr "جار التحميل..."
+
+msgid "common.see_more"
+msgstr "رؤية المزيد"
+
+msgid "common.show_on_map"
+msgstr "عرض على الخريطة"
+
+msgid "common.from"
+msgstr "ابتداءً من"
+
+msgid "common.stars"
+msgstr "نجوم"
+
+msgid "common.guests"
+msgstr "مسافر"

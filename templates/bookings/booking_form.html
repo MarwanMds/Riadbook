@@ -1,0 +1,237 @@
+{% extends "base.html" %} {% block title %}Réserver — {{ room.name }}{% endblock %} {% block content %}
+{% load i18n %}
+{% load i18n_extras %}
+<div class="max-w-5xl mx-auto px-4 py-10">
+
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-sm text-ink/50 mb-6">
+        <a href="{% url 'properties:detail' property.slug %}" class="hover:text-terracotta transition">
+      {{ property.name }}
+    </a>
+        <span>›</span>
+        <span class="text-ink">Réservation</span>
+    </div>
+
+    <h1 class="font-display text-3xl text-ink mb-8">{% trans "booking.title" %}</h1>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- ── Left: Form ── -->
+        <div class="lg:col-span-2 space-y-6">
+
+            <form method="post" action="{% url 'bookings:confirm' room.pk %}" id="booking-form">
+                {% csrf_token %}
+
+                <!-- Dates & Guests -->
+                <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-6">
+                    <h2 class="font-semibold text-ink text-lg mb-5 flex items-center gap-2">
+                        <span class="w-7 h-7 bg-terracotta text-white rounded-full text-sm flex items-center justify-center font-bold">1</span> {% trans "booking.guests" %}
+                    </h2>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-ink mb-1">
+                Arrivée <span class="text-terracotta">*</span>
+              </label>
+                            <input type="date" name="check_in" id="id_check_in" value="{{ form.check_in.value|default:check_in|date:'Y-m-d' }}" min="{% now 'Y-m-d' %}" required class="w-full border border-sand-dark rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/30">                            {% if form.check_in.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.check_in.errors|join:" " }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-ink mb-1">
+                Départ <span class="text-terracotta">*</span>
+              </label>
+                            <input type="date" name="check_out" id="id_check_out" value="{{ form.check_out.value|default:check_out|date:'Y-m-d' }}" min="{% now 'Y-m-d' %}" required class="w-full border border-sand-dark rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/30">                            {% if form.check_out.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.check_out.errors|join:" " }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-ink mb-1">Adultes <span class="text-terracotta">*</span></label>
+                            <input type="number" name="num_adults" id="id_num_adults" value="{{ form.num_adults.value|default:1 }}" min="1" max="{{ room.capacity }}" required class="w-full border border-sand-dark rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/30">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-ink mb-1">Enfants</label>
+                            <input type="number" name="num_children" id="id_num_children" value="{{ form.num_children.value|default:0 }}" min="0" max="10" class="w-full border border-sand-dark rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/30">
+                        </div>
+                    </div>
+
+                    {% if form.non_field_errors %}
+                    <div class="mt-4 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+                        {{ form.non_field_errors|join:" " }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Guest details -->
+                <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-6">
+                    <h2 class="font-semibold text-ink text-lg mb-5 flex items-center gap-2">
+                        <span class="w-7 h-7 bg-terracotta text-white rounded-full text-sm flex items-center justify-center font-bold">2</span> {% trans "booking.your_info" %}
+                    </h2>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-ink mb-1">{% trans "auth.first_name" %} <span class="text-terracotta">*</span></label>
+                            <input type="text" name="guest_first_name" value="{{ form.guest_first_name.value|default:'' }}" required class="w-full border border-sand-dark rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/30">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-ink mb-1">{% trans "auth.last_name" %} <span class="text-terracotta">*</span></label>
+                            <input type="text" name="guest_last_name" value="{{ form.guest_last_name.value|default:'' }}" required class="w-full border border-sand-dark rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/30">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-ink mb-1">{% trans "auth.email" %} <span class="text-terracotta">*</span></label>
+                            <input type="email" name="guest_email" value="{{ form.guest_email.value|default:'' }}" required class="w-full border border-sand-dark rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/30">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-ink mb-1">{% trans "booking.phone" %}</label>
+                            <input type="tel" name="guest_phone" value="{{ form.guest_phone.value|default:'' }}" placeholder="+212 6XX XXX XXX" class="w-full border border-sand-dark rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/30">
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-ink mb-1">{% trans "booking.special_requests" %}</label>
+                        <textarea name="special_requests" rows="3" placeholder="Arrivée tardive, chambre haute, lit bébé…" class="w-full border border-sand-dark rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-none">{{ form.special_requests.value|default:'' }}</textarea>
+                        <p class="text-xs text-ink/40 mt-1">Les demandes spéciales ne sont pas garanties.</p>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="flex items-center justify-between">
+                    <a href="{% url 'properties:detail' property.slug %}" class="text-sm text-ink/50 hover:text-ink transition"><i data-lucide="arrow-left" class="icon-modern"></i> Retour</a>
+                    <button type="submit" class="bg-terracotta text-white px-8 py-3 rounded-xl font-semibold hover:bg-terracotta-dark transition text-sm">
+            {% trans "booking.confirm" %} <i data-lucide="arrow-right" class="icon-modern"></i>
+          </button>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- ── Right: Summary ── -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-2xl border border-sand-dark shadow-sm overflow-hidden sticky top-24">
+
+                <!-- Property cover -->
+                {% with property.photos.first as cover %} {% if cover %}
+                <img src="{{ cover.image.url }}" alt="{{ property.name }}" class="w-full h-44 object-cover"> {% else %}
+                <div class="w-full h-44 bg-sand flex items-center justify-center text-5xl"><i data-lucide="landmark" class="icon-modern"></i></div>
+                {% endif %} {% endwith %}
+
+                <div class="p-5 space-y-4">
+                    <div>
+                        <h3 class="font-display text-lg text-ink">{{ property.name }}</h3>
+                        <p class="text-sm text-ink/50">{{ property.city|translated_name }}</p>
+                        <p class="text-sm text-zellige mt-1">{{ room.name }}</p>
+                    </div>
+
+                    <!-- Dates summary -->
+                    {% if num_nights > 0 %}
+                    <div class="bg-sand-light rounded-xl p-4 space-y-2 text-sm" id="price-summary">
+                        <div class="flex justify-between text-ink/70">
+                            <span>{{ check_in|date:"d/m/Y" }} <i data-lucide="arrow-right" class="icon-modern"></i> {{ check_out|date:"d/m/Y" }}</span>
+                            <span>{{ num_nights }} nuit{% if num_nights > 1 %}s{% endif %}</span>
+                        </div>
+                        <div class="flex justify-between text-ink/70">
+                            <span>{{ room.price_per_night|floatformat:0 }} MAD × {{ num_nights }} nuit{% if num_nights > 1 %}s{% endif %}</span>
+                            <span id="subtotal-val">{{ subtotal|floatformat:0 }} MAD</span>
+                        </div>
+                        <div class="flex justify-between text-ink/70">
+                            <span>Taxes (10%)</span>
+                            <span id="taxes-val">{{ taxes|floatformat:0 }} MAD</span>
+                        </div>
+                        <div class="border-t border-sand-dark pt-2 flex justify-between font-bold text-ink">
+                            <span>Total</span>
+                            <span id="total-val" class="text-terracotta">{{ grand_total|floatformat:0 }} MAD</span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="bg-sand-light rounded-xl p-4 text-sm text-ink/50 text-center" id="price-summary">
+                        Sélectionnez vos dates pour voir le prix total
+                    </div>
+                    {% endif %}
+
+                    <!-- Room amenities -->
+                    <div class="text-xs text-ink/50 space-y-1">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-zellige" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+              </svg> Capacité : {{ room.capacity }} personne{% if room.capacity > 1 %}s{% endif %}
+                        </div>
+                        {% if room.cancellation_policy %}
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-zellige" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg> {{ room.get_cancellation_policy_display }}
+                        </div>
+                        {% endif %}
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-ink/40" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="1" y="4" width="22" height="16" rx="2"/>
+                <path d="M1 10h22"/>
+              </svg> {% trans "booking.confirm" %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Live price update when dates change
+    const checkIn = document.getElementById('id_check_in');
+    const checkOut = document.getElementById('id_check_out');
+    const pricePerNight = {
+        {
+            room.price_per_night
+        }
+    };
+    const TAX_RATE = 0.10;
+
+    function updatePrice() {
+        const ci = new Date(checkIn.value);
+        const co = new Date(checkOut.value);
+        if (!checkIn.value || !checkOut.value || co <= ci) return;
+
+        const nights = Math.round((co - ci) / (1000 * 60 * 60 * 24));
+        const subtotal = pricePerNight * nights;
+        const taxes = subtotal * TAX_RATE;
+        const total = subtotal + taxes;
+
+        const fmt = n => Math.round(n).toLocaleString('fr-FR');
+
+        const summary = document.getElementById('price-summary');
+        summary.innerHTML = `
+      <div class="flex justify-between text-ink/70">
+        <span>${checkIn.value.split('-').reverse().join('/')} <i data-lucide="arrow-right" class="icon-modern"></i> ${checkOut.value.split('-').reverse().join('/')}</span>
+        <span>${nights} nuit${nights > 1 ? 's' : ''}</span>
+      </div>
+      <div class="flex justify-between text-ink/70">
+        <span>${fmt(pricePerNight)} MAD × ${nights} nuit${nights > 1 ? 's' : ''}</span>
+        <span>${fmt(subtotal)} MAD</span>
+      </div>
+      <div class="flex justify-between text-ink/70">
+        <span>Taxes (10%)</span>
+        <span>${fmt(taxes)} MAD</span>
+      </div>
+      <div class="border-t border-sand-dark pt-2 flex justify-between font-bold text-ink">
+        <span>Total</span>
+        <span class="text-terracotta">${fmt(total)} MAD</span>
+      </div>
+    `;
+        if (window.lucide) { lucide.createIcons(); }
+    }
+
+    checkIn.addEventListener('change', () => {
+        // Ensure check_out is after check_in
+        if (checkOut.value && checkOut.value <= checkIn.value) {
+            checkOut.value = '';
+        }
+        checkOut.min = checkIn.value;
+        updatePrice();
+    });
+    checkOut.addEventListener('change', updatePrice);
+</script>
+{% endblock %}

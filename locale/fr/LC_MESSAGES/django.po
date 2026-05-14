@@ -1,0 +1,380 @@
+# French translations for RiadBook Maroc
+# This file is the source language
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+# ── Navigation ──
+msgid "nav.home"
+msgstr "Accueil"
+
+msgid "nav.search"
+msgstr "Rechercher"
+
+msgid "nav.riads"
+msgstr "Riads Marocains"
+
+msgid "nav.backoffice"
+msgstr "Back-office"
+
+msgid "nav.my_establishment"
+msgstr "Mon établissement"
+
+msgid "nav.my_space"
+msgstr "Mon espace"
+
+msgid "nav.profile"
+msgstr "Mon profil"
+
+msgid "nav.logout"
+msgstr "Déconnexion"
+
+msgid "nav.login"
+msgstr "Connexion"
+
+msgid "nav.register"
+msgstr "S'inscrire"
+
+# ── Language switcher ──
+msgid "lang.switch"
+msgstr "Langue"
+
+msgid "lang.fr"
+msgstr "Français"
+
+msgid "lang.ar"
+msgstr "العربية"
+
+msgid "lang.en"
+msgstr "English"
+
+# ── Homepage ──
+msgid "home.hero_title"
+msgstr "Découvrez le Maroc authentique"
+
+msgid "home.hero_subtitle"
+msgstr "Réservez les plus beaux riads et hôtels du Maroc en quelques clics"
+
+msgid "home.search_placeholder_city"
+msgstr "Ville ou région"
+
+msgid "home.search_checkin"
+msgstr "Arrivée"
+
+msgid "home.search_checkout"
+msgstr "Départ"
+
+msgid "home.search_guests"
+msgstr "Voyageurs"
+
+msgid "home.search_button"
+msgstr "Rechercher"
+
+msgid "home.featured_riads"
+msgstr "Riads en vedette"
+
+msgid "home.popular_cities"
+msgstr "Villes populaires"
+
+msgid "home.why_riadbook"
+msgstr "Pourquoi RiadBook ?"
+
+msgid "home.authentic_label"
+msgstr "Établissements authentiques"
+
+msgid "home.authentic_desc"
+msgstr "Riads certifiés et hôtels sélectionnés avec soin"
+
+msgid "home.secure_booking"
+msgstr "Réservation sécurisée"
+
+msgid "home.secure_desc"
+msgstr "Processus simple en 2 étapes, confirmation par email"
+
+msgid "home.local_support"
+msgstr "Support local 7j/7"
+
+msgid "home.local_desc"
+msgstr "Une équipe marocaine disponible de 8h à 22h"
+
+# ── Search ──
+msgid "search.title"
+msgstr "Résultats de recherche"
+
+msgid "search.filters"
+msgstr "Filtres"
+
+msgid "search.price_range"
+msgstr "Prix par nuit"
+
+msgid "search.type"
+msgstr "Type d'établissement"
+
+msgid "search.rating"
+msgstr "Notation"
+
+msgid "search.amenities"
+msgstr "Équipements"
+
+msgid "search.style"
+msgstr "Style"
+
+msgid "search.free_cancel"
+msgstr "Annulation gratuite uniquement"
+
+msgid "search.no_results"
+msgstr "Aucun établissement trouvé"
+
+msgid "search.results_count"
+msgstr "établissement(s) trouvé(s)"
+
+msgid "search.sort_by"
+msgstr "Trier par"
+
+msgid "search.sort_price_asc"
+msgstr "Prix croissant"
+
+msgid "search.sort_price_desc"
+msgstr "Prix décroissant"
+
+msgid "search.sort_rating"
+msgstr "Mieux notés"
+
+# ── Property types ──
+msgid "type.riad"
+msgstr "Riad"
+
+msgid "type.hotel"
+msgstr "Hôtel"
+
+msgid "type.guesthouse"
+msgstr "Maison d'hôtes"
+
+# ── Amenities ──
+msgid "amenity.wifi"
+msgstr "Wi-Fi"
+
+msgid "amenity.pool"
+msgstr "Piscine"
+
+msgid "amenity.spa"
+msgstr "Spa"
+
+msgid "amenity.hammam"
+msgstr "Hammam"
+
+msgid "amenity.parking"
+msgstr "Parking"
+
+msgid "amenity.breakfast"
+msgstr "Petit-déjeuner inclus"
+
+# ── Property detail ──
+msgid "property.per_night"
+msgstr "par nuit"
+
+msgid "property.book_now"
+msgstr "Réserver maintenant"
+
+msgid "property.rooms"
+msgstr "Chambres disponibles"
+
+msgid "property.reviews"
+msgstr "Avis clients"
+
+msgid "property.location"
+msgstr "Localisation"
+
+msgid "property.description"
+msgstr "Description"
+
+msgid "property.authentic_riad"
+msgstr "Riad Authentique"
+
+msgid "property.verified_review"
+msgstr "Avis vérifié"
+
+msgid "property.no_reviews"
+msgstr "Aucun avis pour le moment"
+
+msgid "property.write_review"
+msgstr "Laisser un avis"
+
+# ── Booking ──
+msgid "booking.title"
+msgstr "Finaliser la réservation"
+
+msgid "booking.summary"
+msgstr "Récapitulatif"
+
+msgid "booking.checkin"
+msgstr "Arrivée"
+
+msgid "booking.checkout"
+msgstr "Départ"
+
+msgid "booking.guests"
+msgstr "Voyageurs"
+
+msgid "booking.nights"
+msgstr "nuit(s)"
+
+msgid "booking.total"
+msgstr "Total"
+
+msgid "booking.taxes"
+msgstr "Taxes et frais"
+
+msgid "booking.confirm"
+msgstr "Confirmer la réservation"
+
+msgid "booking.cancel"
+msgstr "Annuler"
+
+msgid "booking.status_pending"
+msgstr "En attente"
+
+msgid "booking.status_confirmed"
+msgstr "Confirmée"
+
+msgid "booking.status_cancelled"
+msgstr "Annulée"
+
+msgid "booking.status_completed"
+msgstr "Terminée"
+
+msgid "booking.your_info"
+msgstr "Vos coordonnées"
+
+msgid "booking.full_name"
+msgstr "Nom complet"
+
+msgid "booking.email"
+msgstr "Email"
+
+msgid "booking.phone"
+msgstr "Téléphone"
+
+msgid "booking.special_requests"
+msgstr "Demandes spéciales"
+
+# ── Auth ──
+msgid "auth.login_title"
+msgstr "Connexion"
+
+msgid "auth.register_title"
+msgstr "Créer un compte"
+
+msgid "auth.email"
+msgstr "Adresse email"
+
+msgid "auth.password"
+msgstr "Mot de passe"
+
+msgid "auth.confirm_password"
+msgstr "Confirmer le mot de passe"
+
+msgid "auth.first_name"
+msgstr "Prénom"
+
+msgid "auth.last_name"
+msgstr "Nom"
+
+msgid "auth.forgot_password"
+msgstr "Mot de passe oublié ?"
+
+msgid "auth.no_account"
+msgstr "Pas encore de compte ?"
+
+msgid "auth.have_account"
+msgstr "Déjà un compte ?"
+
+msgid "auth.role_traveler"
+msgstr "Voyageur"
+
+msgid "auth.role_owner"
+msgstr "Propriétaire / Hôtelier"
+
+# ── Dashboard ──
+msgid "dashboard.title"
+msgstr "Mon espace"
+
+msgid "dashboard.upcoming_bookings"
+msgstr "Réservations à venir"
+
+msgid "dashboard.past_bookings"
+msgstr "Séjours passés"
+
+msgid "dashboard.favorites"
+msgstr "Mes favoris"
+
+msgid "dashboard.reviews"
+msgstr "Mes avis"
+
+msgid "dashboard.messages"
+msgstr "Messages"
+
+msgid "dashboard.settings"
+msgstr "Paramètres"
+
+msgid "dashboard.no_bookings"
+msgstr "Aucune réservation pour le moment"
+
+# ── Footer ──
+msgid "footer.tagline"
+msgstr "La plateforme de référence pour les riads et hôtels au Maroc"
+
+msgid "footer.links"
+msgstr "Liens utiles"
+
+msgid "footer.legal"
+msgstr "Informations légales"
+
+msgid "footer.privacy"
+msgstr "Politique de confidentialité"
+
+msgid "footer.terms"
+msgstr "Conditions générales"
+
+msgid "footer.contact"
+msgstr "Contact"
+
+msgid "footer.copyright"
+msgstr "Tous droits réservés"
+
+# ── Common ──
+msgid "common.save"
+msgstr "Enregistrer"
+
+msgid "common.cancel"
+msgstr "Annuler"
+
+msgid "common.delete"
+msgstr "Supprimer"
+
+msgid "common.edit"
+msgstr "Modifier"
+
+msgid "common.back"
+msgstr "Retour"
+
+msgid "common.loading"
+msgstr "Chargement..."
+
+msgid "common.see_more"
+msgstr "Voir plus"
+
+msgid "common.show_on_map"
+msgstr "Voir sur la carte"
+
+msgid "common.from"
+msgstr "À partir de"
+
+msgid "common.stars"
+msgstr "étoiles"
+
+msgid "common.guests"
+msgstr "voyageur(s)"

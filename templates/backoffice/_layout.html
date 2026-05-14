@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="flex min-h-screen bg-sand-light">
+
+  <aside class="w-60 bg-ink text-white flex-shrink-0 hidden lg:flex flex-col">
+    <div class="px-6 py-5 border-b border-white/10">
+      <p class="text-xs text-white/40 uppercase tracking-widest mb-0.5">Administration</p>
+      <p class="font-display text-lg font-semibold text-white">RiadBook</p>
+    </div>
+
+    <nav class="flex-1 px-3 py-4 space-y-1 text-sm">
+      {% url 'backoffice:dashboard'  as url_dash %}
+      {% url 'backoffice:properties' as url_props %}
+      {% url 'backoffice:reviews'    as url_rev %}
+      {% url 'backoffice:bookings'   as url_book %}
+      {% url 'backoffice:users'      as url_users %}
+      {% url 'backoffice:messaging'  as url_msg %}
+      {% url 'backoffice:stats'      as url_stats %}
+
+      <a href="{{ url_dash }}"
+         class="flex items-center gap-3 px-3 py-2 rounded-xl transition-colors
+                {% if request.path == url_dash %}bg-white/10{% else %}hover:bg-white/5{% endif %}">
+        <div class="jelly j-terracotta">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </div>
+        <span class="text-white/80">Dashboard</span>
+      </a>
+
+      <a href="{{ url_props }}"
+         class="flex items-center gap-3 px-3 py-2 rounded-xl transition-colors
+                {% if 'properties' in request.path %}bg-white/10{% else %}hover:bg-white/5{% endif %}">
+        <div class="jelly j-gold">
+          <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg>
+        </div>
+        <span class="text-white/80 flex-1">Établissements</span>
+        {% if stats.pending_properties %}<span class="bg-gold text-ink text-xs font-bold px-1.5 py-0.5 rounded-full">{{ stats.pending_properties }}</span>{% endif %}
+      </a>
+
+      <a href="{{ url_rev }}"
+         class="flex items-center gap-3 px-3 py-2 rounded-xl transition-colors
+                {% if 'reviews' in request.path %}bg-white/10{% else %}hover:bg-white/5{% endif %}">
+        <div class="jelly j-zellige">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <span class="text-white/80 flex-1">Avis</span>
+        {% if stats.pending_reviews %}<span class="bg-gold text-ink text-xs font-bold px-1.5 py-0.5 rounded-full">{{ stats.pending_reviews }}</span>{% endif %}
+      </a>
+
+      <a href="{{ url_book }}"
+         class="flex items-center gap-3 px-3 py-2 rounded-xl transition-colors
+                {% if 'bookings' in request.path %}bg-white/10{% else %}hover:bg-white/5{% endif %}">
+        <div class="jelly j-blue">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        </div>
+        <span class="text-white/80">Réservations</span>
+      </a>
+
+      <a href="{{ url_users }}"
+         class="flex items-center gap-3 px-3 py-2 rounded-xl transition-colors
+                {% if 'users' in request.path %}bg-white/10{% else %}hover:bg-white/5{% endif %}">
+        <div class="jelly j-purple">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <span class="text-white/80">Utilisateurs</span>
+      </a>
+
+      <a href="{{ url_msg }}"
+         class="flex items-center gap-3 px-3 py-2 rounded-xl transition-colors
+                {% if 'messages' in request.path %}bg-white/10{% else %}hover:bg-white/5{% endif %}">
+        <div class="jelly j-rose">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </div>
+        <span class="text-white/80 flex-1">Messages</span>
+        {% if stats.open_conversations %}<span class="bg-rose-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">{{ stats.open_conversations }}</span>{% endif %}
+      </a>
+
+      <a href="{{ url_stats }}"
+         class="flex items-center gap-3 px-3 py-2 rounded-xl transition-colors
+                {% if 'stats' in request.path %}bg-white/10{% else %}hover:bg-white/5{% endif %}">
+        <div class="jelly j-ink">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <span class="text-white/80">Statistiques</span>
+      </a>
+    </nav>
+
+    <div class="px-4 py-4 border-t border-white/10 text-xs text-white/40">
+      {{ user.full_name }}
+    </div>
+  </aside>
+
+  <main class="flex-1 min-w-0 p-6 lg:p-8">
+    {% if messages %}
+    <div class="mb-4 space-y-2">
+      {% for msg in messages %}
+      <div class="px-4 py-3 rounded-xl text-sm font-medium
+                  {% if msg.tags == 'success' %}bg-green-100 text-green-800
+                  {% elif msg.tags == 'error' %}bg-red-100 text-red-700
+                  {% else %}bg-gold/10 text-gold-dark{% endif %}">
+        {{ msg }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% block admin_content %}{% endblock %}
+  </main>
+
+</div>
+{% endblock %}

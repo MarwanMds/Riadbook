@@ -1,0 +1,44 @@
+{% extends "base.html" %} {% block title %}Chambres — {{ prop.name }}{% endblock %} {% block content %}
+{% load i18n %}
+<div class="max-w-4xl mx-auto px-4 py-10">
+    <a href="{% url 'owner:dashboard' %}" class="text-sm text-terracotta hover:underline"><i data-lucide="arrow-left" class="icon-modern"></i> Tableau de bord</a>
+    <div class="flex items-center justify-between mt-4 mb-6">
+        <div>
+            <h1 class="font-display text-2xl text-ink">Chambres</h1>
+            <p class="text-ink/60">{{ prop.name }}</p>
+        </div>
+        <a href="{% url 'owner:room_new' prop.id %}" class="bg-terracotta text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-terracotta-dark">+ Ajouter</a>
+    </div>
+
+    {% if rooms %}
+    <div class="space-y-4">
+        {% for room in rooms %}
+        <div class="bg-white rounded-2xl shadow-sm border border-sand-dark p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+                <div class="flex items-center gap-2">
+                    <h3 class="font-semibold text-ink">{{ room.name }}</h3>
+                    {% if not room.is_active %}<span class="text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded-full">Inactif</span>{% endif %}
+                </div>
+                <div class="text-sm text-ink/60 mt-1">
+                    {{ room.get_bed_type_display }} · {{ room.capacity }} pers. max
+                </div>
+                <div class="text-sm font-semibold text-terracotta mt-1">{{ room.price_per_night }} MAD / {% trans "property.per_night" %}</div>
+                {% if room.free_cancellation %}
+                <div class="text-xs text-zellige mt-0.5"><i data-lucide="check-circle" class="icon-modern"></i> Annulation gratuite</div>{% endif %}
+            </div>
+            <div class="flex gap-2">
+                <a href="{% url 'owner:room_edit' prop.id room.id %}" class="text-xs border border-terracotta text-terracotta px-3 py-1.5 rounded-lg hover:bg-terracotta hover:text-white transition-colors font-medium">Modifier</a>
+                <a href="{% url 'owner:availability' prop.id %}" class="text-xs border border-zellige text-zellige px-3 py-1.5 rounded-lg hover:bg-zellige hover:text-white transition-colors font-medium">Disponibilités</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-16 text-ink/40">
+        <div class="text-5xl mb-3"><i data-lucide="bed-double" class="icon-modern"></i></div>
+        <p class="font-display text-xl mb-4">Aucune chambre</p>
+        <a href="{% url 'owner:room_new' prop.id %}" class="bg-terracotta text-white px-6 py-3 rounded-xl font-semibold hover:bg-terracotta-dark">Ajouter une chambre</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

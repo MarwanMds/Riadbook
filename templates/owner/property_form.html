@@ -1,0 +1,112 @@
+{% extends "base.html" %} {% block title %}{% if action == 'edit' %}Modifier{% else %}Ajouter{% endif %} un établissement{% endblock %} {% block content %}
+{% load i18n %}
+{% load i18n_extras %}
+<div class="max-w-3xl mx-auto px-4 py-10">
+    <a href="{% url 'owner:dashboard' %}" class="text-sm text-terracotta hover:underline"><i data-lucide="arrow-left" class="icon-modern"></i> Retour au tableau de bord</a>
+    <h1 class="font-display text-3xl text-ink mt-4 mb-2">
+        {% if action == 'edit' %}Modifier{% else %}Ajouter{% endif %} un établissement
+    </h1>
+    <div class="zellige-divider w-20 mb-8"></div>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        <div class="bg-white rounded-2xl shadow-sm border border-sand-dark p-6 space-y-4">
+            <h2 class="font-display text-lg">Informations générales</h2>
+            <div>
+                <label class="block text-sm font-medium text-ink/70 mb-1">Nom de l'établissement *</label>
+                <input type="text" name="name" value="{{ prop.name|default:'' }}" required class="w-full border border-sand-dark rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-ink/70 mb-1">Type *</label>
+                    <select name="property_type" class="w-full border border-sand-dark rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+            <option value="riad" {% if prop.property_type == 'riad' %}selected{% endif %}>Riad</option>
+            <option value="hotel" {% if prop.property_type == 'hotel' %}selected{% endif %}>Hôtel</option>
+            <option value="guesthouse" {% if prop.property_type == 'guesthouse' %}selected{% endif %}>Maison d'hôtes</option>
+          </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink/70 mb-1">Style *</label>
+                    <select name="style" class="w-full border border-sand-dark rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+            <option value="traditional" {% if prop.style == 'traditional' %}selected{% endif %}>Traditionnel</option>
+            <option value="modern" {% if prop.style == 'modern' %}selected{% endif %}>Moderne</option>
+            <option value="luxury" {% if prop.style == 'luxury' %}selected{% endif %}>Luxe</option>
+            <option value="budget" {% if prop.style == 'budget' %}selected{% endif %}>Économique</option>
+          </select>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-ink/70 mb-1">Description *</label>
+                <textarea name="description" rows="5" required class="w-full border border-sand-dark rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-terracotta/40 resize-none">{{ prop.description|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-sand-dark p-6 space-y-4">
+            <h2 class="font-display text-lg">Localisation</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-ink/70 mb-1">Ville *</label>
+                    <select name="city" class="w-full border border-sand-dark rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+            {% for city in cities %}
+            <option value="{{ city.id }}" {% if prop.city_id == city.id %}selected{% endif %}>{{ city|translated_name }}</option>
+            {% endfor %}
+          </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink/70 mb-1">Adresse *</label>
+                    <input type="text" name="address" value="{{ prop.address|default:'' }}" required class="w-full border border-sand-dark rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink/70 mb-1">Latitude</label>
+                    <input type="number" name="latitude" step="any" value="{{ prop.latitude|default:'' }}" placeholder="31.628674" class="w-full border border-sand-dark rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-ink/70 mb-1">Longitude</label>
+                    <input type="number" name="longitude" step="any" value="{{ prop.longitude|default:'' }}" placeholder="-7.992047" class="w-full border border-sand-dark rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-sand-dark p-6 space-y-4">
+            <h2 class="font-display text-lg">Équipements & Labels</h2>
+            <div class="flex flex-wrap gap-2">
+                {% for amenity in amenities %}
+                <label class="flex items-center gap-2 bg-sand px-3 py-2 rounded-xl cursor-pointer hover:bg-sand-dark transition-colors text-sm">
+          <input type="checkbox" name="amenities" value="{{ amenity.id }}"
+                 {% if prop and amenity in prop.amenities.all %}checked{% endif %}
+                 class="accent-terracotta">
+          <i data-lucide="circle-check" class="icon-modern text-terracotta"></i>
+          {{ amenity|translated_name }}
+        </label> {% endfor %}
+            </div>
+            <div class="flex flex-wrap gap-6 mt-2">
+                <label class="flex items-center gap-2 cursor-pointer text-sm font-medium">
+          <input type="checkbox" name="free_cancellation" {% if prop.free_cancellation %}checked{% endif %}
+                 class="w-4 h-4 accent-terracotta">
+          Annulation gratuite
+        </label>
+                <label class="flex items-center gap-2 cursor-pointer text-sm font-medium">
+          <input type="checkbox" name="is_authentic_riad" {% if prop.is_authentic_riad %}checked{% endif %}
+                 class="w-4 h-4 accent-terracotta">
+          <i data-lucide="trophy" class="icon-modern"></i> Label Riad Authentique
+        </label>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-sand-dark p-6">
+            <h2 class="font-display text-lg mb-3">Photo de couverture</h2>
+            {% if prop and prop.photos.first %}
+            <div class="mb-3">
+                <img src="{{ prop.photos.first.image.url }}" alt="" class="w-32 h-24 object-cover rounded-xl">
+                <p class="text-xs text-ink/50 mt-1">Photo actuelle — Uploadez une nouvelle pour la remplacer</p>
+            </div>
+            {% endif %}
+            <input type="file" name="cover_photo" accept="image/*" class="block w-full text-sm text-ink/70 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:font-medium file:bg-terracotta/10 file:text-terracotta hover:file:bg-terracotta/20">
+        </div>
+
+        <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-4 rounded-2xl transition-colors text-lg shadow-md">
+      {% if action == 'edit' %}<i data-lucide="save" class="icon-pill"></i> Enregistrer les modifications{% else %}<i data-lucide="send" class="icon-pill"></i> Soumettre pour validation{% endif %}
+    </button>
+    </form>
+</div>
+{% endblock %}

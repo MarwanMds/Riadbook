@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load i18n_extras %}
+{% block title %}{% trans "dashboard.upcoming_bookings" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-10">
+
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="font-display text-3xl text-ink">{% trans "dashboard.upcoming_bookings" %}</h1>
+      <div class="zellige-divider w-20 mt-2"></div>
+    </div>
+    <a href="{% url 'traveler:dashboard' %}" class="text-sm text-ink/50 hover:text-terracotta"><i data-lucide="arrow-left" class="icon-modern"></i> Dashboard</a>
+  </div>
+
+  <!-- Status filter tabs -->
+  <div class="flex flex-wrap gap-2 mb-6">
+    <a href="{% url 'traveler:reservations' %}"
+       class="px-4 py-2 rounded-full text-sm font-medium transition-colors
+              {% if not status_filter %}bg-terracotta text-white{% else %}bg-sand text-ink/70 hover:bg-sand-dark{% endif %}">
+      {% trans "common.see_more" %}
+    </a>
+    {% for value, label in status_choices %}
+    <a href="?status={{ value }}"
+       class="px-4 py-2 rounded-full text-sm font-medium transition-colors
+              {% if status_filter == value %}bg-terracotta text-white{% else %}bg-sand text-ink/70 hover:bg-sand-dark{% endif %}">
+      {{ label }}
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- Bookings list -->
+  {% if bookings %}
+  <div class="space-y-4">
+    {% for booking in bookings %}
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm overflow-hidden">
+      <div class="flex flex-col sm:flex-row">
+        <!-- Cover image -->
+        {% with booking.room.property.photos.first as cover %}
+        {% if cover %}
+        <img src="{{ cover.image.url }}" alt="" class="sm:w-40 h-36 sm:h-auto object-cover">
+        {% else %}
+        <div class="sm:w-40 h-36 sm:h-auto bg-sand flex items-center justify-center">
+          <span class="text-4xl"><i data-lucide="landmark" class="icon-modern"></i></span>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Content -->
+        <div class="p-5 flex-1">
+          <div class="flex flex-wrap items-start justify-between gap-2 mb-2">
+            <div>
+              <h3 class="font-display text-lg font-semibold text-ink">
+                {{ booking.room.property.name }}
+              </h3>
+              <p class="text-sm text-ink/60">
+                {{ booking.room.name }} — {{ booking.room.property.city|translated_name }}
+              </p>
+            </div>
+            <!-- Status badge -->
+            {% if booking.status == 'confirmed' %}
+              <span class="text-xs bg-zellige/10 text-zellige px-3 py-1 rounded-full font-semibold"><i data-lucide="check-circle" class="icon-modern"></i> Confirmé</span>
+            {% elif booking.status == 'pending' %}
+              <span class="text-xs bg-gold/10 text-gold-dark px-3 py-1 rounded-full font-semibold"><i data-lucide="hourglass" class="icon-modern"></i> En attente</span>
+            {% elif booking.status == 'cancelled' %}
+              <span class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-full font-semibold"><i data-lucide="x-circle" class="icon-modern"></i> Annulé</span>
+            {% elif booking.status == 'completed' %}
+              <span class="text-xs bg-ink/10 text-ink/60 px-3 py-1 rounded-full font-semibold"><i data-lucide="check" class="icon-modern"></i> Terminé</span>
+            {% endif %}
+          </div>
+
+          <!-- Dates & price -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm my-3">
+            <div>
+              <div class="text-xs text-ink/40 uppercase tracking-wider">Arrivée</div>
+              <div class="font-medium">{{ booking.check_in|date:"d M Y" }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-ink/40 uppercase tracking-wider">Départ</div>
+              <div class="font-medium">{{ booking.check_out|date:"d M Y" }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-ink/40 uppercase tracking-wider">Durée</div>
+              <div class="font-medium">{{ booking.num_nights }} nuit{% if booking.num_nights > 1 %}s{% endif %}</div>
+            </div>
+            <div>
+              <div class="text-xs text-ink/40 uppercase tracking-wider">Total</div>
+              <div class="font-semibold text-terracotta">{{ booking.grand_total }} MAD</div>
+            </div>
+          </div>
+
+          <!-- Reference & actions -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-sand">
+            <span class="text-xs text-ink/40 font-mono">Réf. {{ booking.reference }}</span>
+            <div class="flex gap-2 flex-wrap">
+              {% if booking.status in 'confirmed,pending' and booking.check_out >= today %}
+              <a href="{% url 'bookings:voucher' booking.reference %}"
+                 class="text-xs bg-terracotta/10 text-terracotta hover:bg-terracotta hover:text-white px-3 py-1.5 rounded-lg font-medium transition-colors">
+                <i data-lucide="file-text" class="icon-modern"></i> Bon de réservation
+              </a>
+              <a href="{% url 'bookings:cancel' booking.reference %}"
+                 class="text-xs bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg font-medium transition-colors">
+                Annuler
+              </a>
+              {% endif %}
+              {% if booking.status == 'completed' or booking.status == 'confirmed' and booking.check_out < today %}
+                {% if not booking.review %}
+                <a href="{% url 'traveler:submit_review' booking.id %}"
+                   class="text-xs bg-gold/10 text-gold-dark hover:bg-gold-dark hover:text-white px-3 py-1.5 rounded-lg font-medium transition-colors">
+                  <i data-lucide="star" class="icon-modern"></i> Laisser un avis
+                </a>
+                {% else %}
+                <span class="text-xs text-ink/40">Avis soumis <i data-lucide="check" class="icon-modern"></i></span>
+                {% endif %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="bg-sand-light rounded-2xl p-12 text-center">
+    <span class="text-5xl block mb-4"><i data-lucide="inbox" class="icon-modern"></i></span>
+    <p class="text-ink/60 text-lg">Aucune réservation
+      {% if status_filter %}avec ce statut{% endif %}.
+    </p>
+    <a href="{% url 'properties:search' %}"
+       class="mt-4 inline-block bg-terracotta text-white font-semibold px-6 py-3 rounded-2xl hover:bg-terracotta-dark transition-colors">
+      Trouver un riad
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

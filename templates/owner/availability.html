@@ -1,0 +1,78 @@
+{% extends "owner/_layout.html" %}
+{% load i18n %}
+{% block title %}Disponibilités — {{ prop.name }}{% endblock %}
+
+{% block owner_content %}
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <a href="{% url 'owner:properties' %}" class="text-ink/40 hover:text-terracotta text-sm"><i data-lucide="arrow-left" class="icon-modern"></i> Établissements</a>
+    <h1 class="font-display text-2xl text-ink mt-1">Disponibilités — {{ prop.name }}</h1>
+    <p class="text-ink/50 text-sm">Cliquez sur une date pour la bloquer ou débloquer</p>
+  </div>
+</div>
+
+{% if rooms %}
+{% for room in rooms %}
+<div class="bg-white rounded-2xl border border-sand-dark shadow-sm mb-6 overflow-hidden">
+  <div class="px-5 py-4 border-b border-sand flex items-center justify-between">
+    <div>
+      <h2 class="font-semibold text-ink">{{ room.name }}</h2>
+      <p class="text-xs text-ink/50">{{ room.get_bed_type_display }} · {{ room.capacity }} pers. · {{ room.price_per_night }} MAD/nuit</p>
+    </div>
+    <a href="{% url 'owner:room_edit' prop.id room.id %}"
+       class="text-xs text-terracotta hover:underline">Modifier <i data-lucide="arrow-right" class="icon-modern"></i></a>
+  </div>
+
+  <div class="p-4 overflow-x-auto">
+    <div class="flex gap-1.5 min-w-max">
+      {% for day in days_list %}
+      {% with is_blocked=blocked|default_if_none:False %}
+      <form method="post" class="inline">
+        {% csrf_token %}
+        <input type="hidden" name="room_id" value="{{ room.id }}">
+        <input type="hidden" name="date" value="{{ day|date:'Y-m-d' }}">
+        {% if day in blocked|default_if_none:'' %}
+        <input type="hidden" name="action" value="unblock">
+        <button type="submit"
+                class="w-10 h-12 rounded-xl text-xs font-medium transition-colors
+                       bg-red-100 text-red-600 hover:bg-red-200 border border-red-200"
+                title="Bloquer {{ day|date:'d M' }}">
+          <span class="block text-center leading-none">{{ day|date:"d" }}</span>
+          <span class="block text-center text-[9px] opacity-70">{{ day|date:"M" }}</span>
+        </button>
+        {% else %}
+        <input type="hidden" name="action" value="block">
+        <button type="submit"
+                class="w-10 h-12 rounded-xl text-xs font-medium transition-colors
+                       bg-sand hover:bg-zellige/20 text-ink/70 border border-sand-dark"
+                title="Bloquer {{ day|date:'d M' }}">
+          <span class="block text-center leading-none">{{ day|date:"d" }}</span>
+          <span class="block text-center text-[9px] opacity-70">{{ day|date:"M" }}</span>
+        </button>
+        {% endif %}
+      </form>
+      {% endwith %}
+      {% endfor %}
+    </div>
+    <div class="flex items-center gap-4 mt-3 text-xs text-ink/50">
+      <span class="flex items-center gap-1.5">
+        <span class="w-3 h-3 rounded bg-sand border border-sand-dark inline-block"></span> Disponible
+      </span>
+      <span class="flex items-center gap-1.5">
+        <span class="w-3 h-3 rounded bg-red-100 border border-red-200 inline-block"></span> Bloqué
+      </span>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% else %}
+<div class="bg-white rounded-2xl border border-sand-dark p-12 text-center">
+  <p class="text-ink/60 mb-4">Aucune chambre active dans cet établissement.</p>
+  <a href="{% url 'owner:room_new' prop.id %}"
+     class="inline-block bg-terracotta text-white font-semibold px-6 py-3 rounded-2xl hover:bg-terracotta-dark transition-colors">
+    Ajouter une chambre
+  </a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "dashboard.favorites" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-10">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="font-display text-3xl text-ink">{% trans "dashboard.favorites" %}</h1>
+      <p class="text-ink/50 mt-1">
+        {{ favorites|length }} établissement{% if favorites|length != 1 %}s{% endif %} sauvegardé{% if favorites|length != 1 %}s{% endif %}
+      </p>
+    </div>
+    <a href="{% url 'properties:search' %}"
+       class="inline-flex items-center gap-2 bg-terracotta text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-terracotta-dark transition">
+      <i data-lucide="plus" class="icon-modern"></i> {% trans "nav.search" %}
+    </a>
+  </div>
+
+  {% if favorites %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for fav in favorites %}
+    {% with prop=fav.property %}
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm overflow-hidden group hover:shadow-md transition">
+
+      <!-- Cover image -->
+      <a href="{% url 'properties:detail' prop.slug %}" class="block relative h-52 overflow-hidden">
+        {% with prop.photos.first as cover %}
+        {% if cover %}
+        <img src="{{ cover.image.url }}" alt="{{ prop.name }}"
+             class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+        {% else %}
+        <div class="w-full h-full bg-sand flex items-center justify-center">
+          <span class="text-5xl"><i data-lucide="landmark" class="icon-modern"></i></span>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Type badge -->
+        <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-ink text-xs font-medium px-2 py-1 rounded-full">
+          {{ prop.get_property_type_display }}
+        </span>
+
+        <!-- Remove favorite button -->
+        <form method="post" action="{% url 'properties:toggle_favorite' prop.pk %}" class="absolute top-3 right-3">
+          {% csrf_token %}
+          <button type="submit"
+                  class="w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-red-50 transition"
+                  title="Retirer des favoris">
+            <svg class="w-5 h-5 text-red-500 fill-current" viewBox="0 0 24 24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+                       2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+                       C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42
+                       22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
+        </form>
+      </a>
+
+      <!-- Card info -->
+      <div class="p-4">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <h2 class="font-semibold text-ink text-base leading-tight">
+              <a href="{% url 'properties:detail' prop.slug %}" class="hover:text-terracotta transition">
+                {{ prop.name }}
+              </a>
+            </h2>
+            <p class="text-sm text-ink/50 mt-0.5">{{ prop.city.name }}</p>
+          </div>
+          {% if prop.avg_rating %}
+          <div class="flex items-center gap-1 shrink-0">
+            <svg class="w-4 h-4 text-gold fill-current" viewBox="0 0 24 24">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2
+                       9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+            <span class="text-sm font-semibold text-ink">{{ prop.avg_rating|floatformat:1 }}</span>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="mt-3 flex items-center justify-between">
+          <div>
+            <span class="text-terracotta font-bold text-lg">{{ prop.price_per_night|floatformat:0 }} MAD</span>
+            <span class="text-ink/40 text-sm"> / {% trans "property.per_night" %}</span>
+          </div>
+          <a href="{% url 'properties:detail' prop.slug %}"
+             class="text-sm text-zellige font-medium hover:underline">
+            Voir <i data-lucide="arrow-right" class="icon-modern"></i>
+          </a>
+        </div>
+
+        <p class="text-xs text-ink/30 mt-3">Ajouté le {{ fav.created_at|date:"d/m/Y" }}</p>
+      </div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="text-center py-20">
+    <div class="text-6xl mb-4"><i data-lucide="heart" class="icon-modern"></i></div>
+    <h2 class="font-display text-2xl text-ink mb-2">Aucun favori pour l'instant</h2>
+    <p class="text-ink/50 mb-6">Sauvegardez les établissements qui vous intéressent pour les retrouver facilement.</p>
+    <a href="{% url 'properties:search' %}"
+       class="inline-block bg-terracotta text-white px-6 py-3 rounded-xl font-medium hover:bg-terracotta-dark transition">
+      Explorer les établissements
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load i18n_extras %}
+{% block title %}Recherche{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">if (window.lucide) { lucide.createIcons(); }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+  <!-- ── Header ── -->
+  <div class="mb-6">
+    <h1 class="font-display text-3xl font-bold text-ink">
+      {% if result_count %}{{ result_count }} établissement{{ result_count|pluralize }} trouvé{{ result_count|pluralize }}{% else %}Rechercher{% endif %}
+    </h1>
+    {% if form.city.value %}<p class="text-ink/50 text-sm mt-1">dans <strong>{{ form.city.value }}</strong></p>{% endif %}
+  </div>
+
+  <div class="flex gap-6">
+
+    <!-- ── FILTERS SIDEBAR ── -->
+    <aside class="hidden lg:block w-72 flex-shrink-0">
+      <div class="bg-white rounded-2xl border border-sand-dark p-6 sticky top-20">
+        <h2 class="font-display font-semibold text-ink mb-5 text-lg">Filtres</h2>
+        <form method="get" id="filter-form" class="space-y-6">
+
+          <!-- City -->
+          <div>
+            <label class="block text-sm font-medium text-ink/70 mb-2">Destination</label>
+            <select name="city" onchange="document.getElementById('filter-form').submit()"
+                    class="w-full px-3 py-2 rounded-xl border border-sand-dark bg-sand-light text-sm
+                           focus:outline-none focus:ring-2 focus:ring-terracotta/30">
+              <option value="">{% trans "common.see_more" %} les villes</option>
+              {% for city in cities %}
+              <option value="{{ city.slug }}" {% if form.city.value == city.slug %}selected{% endif %}>
+                {{ city|translated_name }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Dates -->
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs text-ink/50 mb-1">{% trans "booking.checkin" %}</label>
+              <input type="date" name="check_in" value="{{ form.check_in.value|default:'' }}"
+                     class="w-full px-2 py-2 rounded-lg border border-sand-dark bg-sand-light text-xs
+                            focus:outline-none focus:ring-2 focus:ring-terracotta/30" />
+            </div>
+            <div>
+              <label class="block text-xs text-ink/50 mb-1">{% trans "booking.checkout" %}</label>
+              <input type="date" name="check_out" value="{{ form.check_out.value|default:'' }}"
+                     class="w-full px-2 py-2 rounded-lg border border-sand-dark bg-sand-light text-xs
+                            focus:outline-none focus:ring-2 focus:ring-terracotta/30" />
+            </div>
+          </div>
+
+          <!-- Guests -->
+          <div>
+            <label class="block text-sm font-medium text-ink/70 mb-2">{% trans "home.search_guests" %}</label>
+            <input type="number" name="guests" min="1" max="30"
+                   value="{{ form.guests.value|default:'2' }}"
+                   class="w-full px-3 py-2 rounded-xl border border-sand-dark bg-sand-light text-sm
+                          focus:outline-none focus:ring-2 focus:ring-terracotta/30" />
+          </div>
+
+          <!-- Price -->
+          <div>
+            <label class="block text-sm font-medium text-ink/70 mb-2">Prix / {% trans "property.per_night" %} (MAD)</label>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="number" name="price_min" placeholder="Min"
+                     value="{{ form.price_min.value|default:'' }}"
+                     class="w-full px-3 py-2 rounded-xl border border-sand-dark bg-sand-light text-sm
+                            focus:outline-none focus:ring-2 focus:ring-terracotta/30" />
+              <input type="number" name="price_max" placeholder="Max"
+                     value="{{ form.price_max.value|default:'' }}"
+                     class="w-full px-3 py-2 rounded-xl border border-sand-dark bg-sand-light text-sm
+                            focus:outline-none focus:ring-2 focus:ring-terracotta/30" />
+            </div>
+          </div>
+
+          <!-- Type -->
+          <div>
+            <label class="block text-sm font-medium text-ink/70 mb-2">Type</label>
+            <div class="space-y-1.5">
+              {% for val, label in form.property_type.field.choices %}
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="property_type" value="{{ val }}"
+                       {% if val in form.property_type.value %}checked{% endif %}
+                       class="accent-terracotta rounded" />
+                <span class="text-sm text-ink/70">{{ label }}</span>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Style -->
+          <div>
+            <label class="block text-sm font-medium text-ink/70 mb-2">Style</label>
+            <div class="space-y-1.5">
+              {% for val, label in form.style.field.choices %}
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="style" value="{{ val }}"
+                       {% if val in form.style.value %}checked{% endif %}
+                       class="accent-terracotta rounded" />
+                <span class="text-sm text-ink/70">{{ label }}</span>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Amenities -->
+          <div>
+            <label class="block text-sm font-medium text-ink/70 mb-2">Équipements</label>
+            <div class="space-y-1.5 max-h-40 overflow-y-auto">
+              {% for amenity in amenities %}
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="amenities" value="{{ amenity.id }}"
+                       {% if amenity.id|stringformat:"s" in form.amenities.value %}checked{% endif %}
+                       class="accent-terracotta rounded" />
+                <span class="text-sm text-ink/70">{{ amenity|translated_name }}</span>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Free cancellation -->
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" name="free_cancel" value="on"
+                   {% if form.free_cancel.value %}checked{% endif %}
+                   class="accent-terracotta rounded" />
+            <span class="text-sm text-ink/70">Annulation gratuite</span>
+          </label>
+
+          <button type="submit"
+                  class="w-full bg-terracotta hover:bg-terracotta-dark text-white
+                         py-2.5 rounded-xl text-sm font-medium transition-colors">
+            Appliquer les filtres
+          </button>
+          <a href="/search/" class="block text-center text-xs text-ink/40 hover:text-terracotta mt-1">
+            Réinitialiser
+          </a>
+        </form>
+      </div>
+    </aside>
+
+    <!-- ── RESULTS + MAP ── -->
+    <div class="flex-1 min-w-0">
+
+      <!-- Sort + view toggle -->
+      <div class="flex items-center justify-between mb-5">
+        <form method="get" id="sort-form" class="flex items-center gap-2">
+          <!-- Preserve all current filters -->
+          {% for key, val in request.GET.items %}
+            {% if key != "sort" %}<input type="hidden" name="{{ key }}" value="{{ val }}" />{% endif %}
+          {% endfor %}
+          <label class="text-sm text-ink/50">Trier :</label>
+          <select name="sort" onchange="document.getElementById('sort-form').submit()"
+                  class="text-sm border border-sand-dark rounded-lg px-3 py-1.5 bg-white
+                         focus:outline-none focus:ring-2 focus:ring-terracotta/30">
+            {% for val, label in form.sort.field.choices %}
+            <option value="{{ val }}" {% if form.sort.value == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
+
+      <!-- Map -->
+      <div id="map" class="w-full h-64 rounded-2xl mb-6 border border-sand-dark overflow-hidden"></div>
+
+      <!-- Property cards -->
+      <div class="space-y-4">
+        {% for prop in properties %}
+        {% with cover=prop.photos.first %}
+        <a href="/property/{{ prop.slug }}/?check_in={{ form.check_in.value|default:'' }}&check_out={{ form.check_out.value|default:'' }}&guests={{ form.guests.value|default:'2' }}"
+           class="group flex bg-white rounded-2xl border border-sand-dark overflow-hidden
+                  hover:shadow-md transition-all">
+          <!-- Photo -->
+          <div class="relative w-52 flex-shrink-0 bg-sand-dark">
+            {% if cover %}
+            <img src="{{ cover.image.url }}" alt="{{ prop.name }}"
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            {% else %}
+            <div class="w-full h-full flex items-center justify-center text-4xl"><i data-lucide="home" class="icon-modern"></i></div>
+            {% endif %}
+            {% if prop.is_authentic_riad %}
+            <span class="absolute top-2 left-2 bg-gold text-white text-xs px-2 py-0.5 rounded-full"><i data-lucide="sparkles" class="icon-modern"></i> Authentique</span>
+            {% endif %}
+          </div>
+          <!-- Info -->
+          <div class="flex-1 p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <h3 class="font-display font-semibold text-ink text-lg">{{ prop.name }}</h3>
+                  <p class="text-ink/50 text-xs mt-0.5">{{ prop.city.name }} · {{ prop.get_property_type_display }} · {{ prop.get_style_display }}</p>
+                </div>
+                {% if prop.avg_rating %}
+                <div class="flex-shrink-0 text-center">
+                  <div class="bg-terracotta text-white text-sm font-bold px-2.5 py-1 rounded-lg">{{ prop.avg_rating }}</div>
+                  <p class="text-xs text-ink/40 mt-0.5">{{ prop.review_count }} avis</p>
+                </div>
+                {% endif %}
+              </div>
+              <!-- Amenity tags -->
+              <div class="flex flex-wrap gap-1.5 mt-3">
+                {% for amenity in prop.amenities.all|slice:":5" %}
+                <span class="text-xs bg-sand px-2 py-0.5 rounded-full text-ink/60">{{ amenity|translated_name }}</span>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="flex items-end justify-between mt-4">
+              {% if prop.free_cancellation %}
+              <span class="text-xs text-zellige font-medium"><i data-lucide="check" class="icon-modern"></i> Annulation gratuite</span>
+              {% else %}<span></span>{% endif %}
+              <div class="text-right">
+                {% if prop.min_price %}
+                <p class="text-xs text-ink/40">À partir de</p>
+                <p class="font-bold text-ink text-lg">{{ prop.min_price|floatformat:0 }} <span class="text-sm font-normal text-ink/50">MAD/nuit</span></p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </a>
+        {% endwith %}
+        {% empty %}
+        <div class="text-center py-20 text-ink/40">
+          <p class="text-5xl mb-4"><i data-lucide="search" class="icon-modern"></i></p>
+          <p class="font-display text-xl">Aucun résultat trouvé</p>
+          <p class="text-sm mt-2">Essayez de modifier vos critères de recherche.</p>
+          <a href="/search/" class="inline-block mt-4 text-terracotta text-sm hover:underline">Effacer les filtres</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Initialize Leaflet map centered on Morocco
+const map = L.map('map').setView([31.79, -7.09], 6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Custom terracotta marker
+const markerIcon = L.divIcon({
+  className: '',
+  html: '<div style="background:#C0623B;color:white;padding:4px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.3);">MAD</div>',
+  iconAnchor: [20, 10],
+});
+
+const properties = [
+  {% for prop in properties %}
+  {% if prop.latitude and prop.longitude %}
+  {
+    lat: {{ prop.latitude }}, lng: {{ prop.longitude }},
+    name: "{{ prop.name|escapejs }}",
+    city: "{{ prop.city.name|escapejs }}",
+    price: "{% if prop.min_price %}{{ prop.min_price|floatformat:0 }}{% else %}—{% endif %}",
+    slug: "{{ prop.slug }}",
+  },
+  {% endif %}
+  {% endfor %}
+];
+
+const bounds = [];
+properties.forEach(p => {
+  const marker = L.marker([p.lat, p.lng], {icon: markerIcon}).addTo(map);
+  marker.bindPopup(`<strong>${p.name}</strong><br/>${p.city}<br/><a href="/property/${p.slug}/" style="color:#C0623B">Voir <i data-lucide="arrow-right" class="icon-modern"></i></a>`);
+  bounds.push([p.lat, p.lng]);
+});
+if (bounds.length > 0) map.fitBounds(bounds, {padding: [40, 40]});
+if (window.lucide) { lucide.createIcons(); }
+</script>
+{% endblock %}

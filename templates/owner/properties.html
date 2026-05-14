@@ -1,0 +1,79 @@
+{% extends "owner/_layout.html" %} {% block title %}Mes établissements{% endblock %} {% block owner_content %}
+{% load i18n %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="font-display text-2xl text-ink">Mes établissements</h1>
+        <p class="text-ink/50 text-sm mt-1">{{ properties.count }} établissement{{ properties.count|pluralize }}</p>
+    </div>
+    <a href="{% url 'owner:property_new' %}" class="flex items-center gap-2 bg-terracotta text-white px-4 py-2.5 rounded-xl font-medium text-sm hover:bg-terracotta-dark transition-colors shadow-sm">
+        <div class="jelly j-sand" style="width:24px;height:24px;border-radius:7px">
+            <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:#5C4A36"><path d="M12 5v14M5 12h14"/></svg>
+        </div>
+        Ajouter un établissement
+    </a>
+</div>
+
+<div class="space-y-4">
+    {% for prop in properties %}
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm overflow-hidden">
+        <div class="flex flex-col sm:flex-row">
+            {% with prop.photos.first as cover %} {% if cover %}
+            <img src="{{ cover.image.url }}" alt="" class="sm:w-40 h-36 sm:h-auto object-cover"> {% else %}
+            <div class="sm:w-40 h-36 sm:h-auto bg-sand flex items-center justify-center">
+                <span class="text-4xl"><i data-lucide="landmark" class="icon-modern"></i></span>
+            </div>
+            {% endif %} {% endwith %}
+
+            <div class="p-5 flex-1">
+                <div class="flex items-start justify-between gap-3 mb-2">
+                    <div>
+                        <h3 class="font-display text-lg font-semibold text-ink">{{ prop.name }}</h3>
+                        <p class="text-sm text-ink/60">{{ prop.get_property_type_display }} — {{ prop.city.name }}</p>
+                    </div>
+                    {% if prop.status == 'approved' %}
+                    <span class="text-xs bg-zellige/10 text-zellige px-3 py-1 rounded-full font-semibold flex-shrink-0"><i data-lucide="check-circle" class="icon-modern"></i> Approuvé</span> {% elif prop.status == 'pending' %}
+                    <span class="text-xs bg-gold/10 text-gold-dark px-3 py-1 rounded-full font-semibold flex-shrink-0"><i data-lucide="hourglass" class="icon-modern"></i> En attente</span> {% elif prop.status == 'rejected' %}
+                    <span class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-full font-semibold flex-shrink-0"><i data-lucide="x-circle" class="icon-modern"></i> Rejeté</span> {% elif prop.status == 'suspended' %}
+                    <span class="text-xs bg-ink/10 text-ink/50 px-3 py-1 rounded-full font-semibold flex-shrink-0"><i data-lucide="pause-circle" class="icon-modern"></i> Suspendu</span> {% endif %}
+                </div>
+
+                <div class="flex items-center gap-4 text-sm text-ink/50 mb-3">
+                    <span>{{ prop.rooms.count }} chambre{{ prop.rooms.count|pluralize }}</span> {% if prop.avg_rating > 0 %}
+                    <span><i data-lucide="star" class="icon-modern"></i> {{ prop.avg_rating }}</span> {% endif %} {% if prop.is_authentic_riad %}
+                    <span class="text-gold-dark font-medium star-icon"><i data-lucide="badge-check" class="icon-modern"></i> Riad Authentique</span> {% endif %}
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                    <a href="{% url 'owner:property_edit' prop.id %}" class="text-xs bg-sand hover:bg-sand-dark text-ink px-3 py-1.5 rounded-lg font-medium transition-colors">
+            <i data-lucide="pencil" class="icon-modern"></i> Modifier
+          </a>
+                    <a href="{% url 'owner:rooms' prop.id %}" class="text-xs bg-zellige/10 text-zellige hover:bg-zellige hover:text-white px-3 py-1.5 rounded-lg font-medium transition-colors">
+            <i data-lucide="bed-double" class="icon-modern"></i> Chambres
+          </a>
+                    <a href="{% url 'owner:availability' prop.id %}" class="text-xs bg-blue/10 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg font-medium transition-colors">
+            <i data-lucide="calendar-days" class="icon-modern"></i> Disponibilités
+          </a> {% if prop.status == 'approved' and prop.slug %}
+                    <a href="{% url 'properties:detail' prop.slug %}" target="_blank" class="text-xs bg-terracotta/10 text-terracotta hover:bg-terracotta hover:text-white px-3 py-1.5 rounded-lg font-medium transition-colors">
+            <i data-lucide="eye" class="icon-modern"></i> Voir la page
+          </a> {% endif %}
+                    <a href="{% url 'owner:property_delete' prop.id %}" class="text-xs bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg font-medium transition-colors">
+            <i data-lucide="trash-2" class="icon-modern"></i> Supprimer
+          </a>
+                    <a href="{% url 'owner:property_delete' prop.id %}" class="text-xs bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg font-medium transition-colors">
+            <i data-lucide="trash-2" class="icon-modern"></i> Supprimer
+          </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="bg-white rounded-2xl border border-sand-dark p-12 text-center shadow-sm">
+        <p class="text-5xl mb-4"><i data-lucide="landmark" class="icon-modern"></i></p>
+        <p class="text-ink/60 text-lg mb-4">Aucun établissement enregistré.</p>
+        <a href="{% url 'owner:property_new' %}" class="inline-block bg-terracotta text-white font-semibold px-6 py-3 rounded-2xl hover:bg-terracotta-dark transition-colors">
+      Créer mon premier établissement
+    </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

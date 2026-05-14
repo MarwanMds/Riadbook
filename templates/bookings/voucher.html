@@ -1,0 +1,182 @@
+{% extends "base.html" %} {% block title %}Réservation {{ booking.reference }} confirmée{% endblock %} {% block content %}
+{% load i18n %}
+{% load i18n_extras %}
+<div class="max-w-2xl mx-auto px-4 py-10">
+
+    <!-- Success banner -->
+    <div class="text-center mb-8">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+      </svg>
+        </div>
+        <h1 class="font-display text-3xl text-ink mb-2">{% trans "booking.status_confirmed" %} !</h1>
+        <p class="text-ink/50">Un email de confirmation a été envoyé à <strong>{{ booking.guest_email }}</strong></p>
+    </div>
+
+    <!-- Voucher card -->
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-md overflow-hidden" id="voucher">
+
+        <!-- Header -->
+        <div class="bg-ink px-6 py-5 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-terracotta text-2xl"><i data-lucide="sparkles" class="icon-modern"></i></span>
+                <span class="font-display font-bold text-xl text-white">Riad<span class="text-terracotta">Book</span></span>
+                <span class="text-white/40 text-xs uppercase tracking-widest">Maroc</span>
+            </div>
+            <div class="text-right">
+                <p class="text-white/40 text-xs uppercase tracking-wider">Bon de réservation</p>
+                <p class="text-white font-mono font-bold text-lg">{{ booking.reference }}</p>
+            </div>
+        </div>
+
+        <!-- Property info -->
+        <div class="flex items-center gap-4 px-6 py-5 border-b border-sand-dark">
+            {% with booking.room.property.photos.first as cover %} {% if cover %}
+            <img src="{{ cover.image.url }}" alt="" class="w-20 h-20 object-cover rounded-xl shrink-0"> {% else %}
+            <div class="w-20 h-20 bg-sand rounded-xl flex items-center justify-center text-3xl shrink-0"><i data-lucide="landmark" class="icon-modern"></i></div>
+            {% endif %} {% endwith %}
+            <div>
+                <h2 class="font-display text-xl text-ink">{{ booking.room.property.name }}</h2>
+                <p class="text-ink/50 text-sm">{{ booking.room.property.city|translated_name }}</p>
+                <p class="text-zellige text-sm mt-1">{{ booking.room.name }}</p>
+                {% if booking.room.property.address %}
+                <p class="text-ink/40 text-xs mt-1">{{ booking.room.property.address }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Booking details grid -->
+        <div class="grid grid-cols-2 divide-x divide-sand-dark border-b border-sand-dark">
+            <div class="px-6 py-5">
+                <p class="text-xs text-ink/40 uppercase tracking-wider mb-1">Arrivée</p>
+                <p class="font-semibold text-ink text-lg">{{ booking.check_in|date:"d/m/Y" }}</p>
+                <p class="text-sm text-ink/50">{{ booking.check_in|date:"l" }}</p>
+            </div>
+            <div class="px-6 py-5">
+                <p class="text-xs text-ink/40 uppercase tracking-wider mb-1">Départ</p>
+                <p class="font-semibold text-ink text-lg">{{ booking.check_out|date:"d/m/Y" }}</p>
+                <p class="text-sm text-ink/50">{{ booking.check_out|date:"l" }}</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 divide-x divide-sand-dark border-b border-sand-dark text-center">
+            <div class="px-4 py-4">
+                <p class="text-xs text-ink/40 uppercase tracking-wider mb-1">Durée</p>
+                <p class="font-semibold text-ink">{{ booking.num_nights }} nuit{% if booking.num_nights > 1 %}s{% endif %}</p>
+            </div>
+            <div class="px-4 py-4">
+                <p class="text-xs text-ink/40 uppercase tracking-wider mb-1">Voyageurs</p>
+                <p class="font-semibold text-ink">
+                    {{ booking.num_adults }} adulte{% if booking.num_adults > 1 %}s{% endif %} {% if booking.num_children > 0 %}, {{ booking.num_children }} enfant{% if booking.num_children > 1 %}s{% endif %}{% endif %}
+                </p>
+            </div>
+            <div class="px-4 py-4">
+                <p class="text-xs text-ink/40 uppercase tracking-wider mb-1">Statut</p>
+                <p class="font-semibold text-green-600"><i data-lucide="check" class="icon-modern"></i> Confirmé</p>
+            </div>
+        </div>
+
+        <!-- Guest info -->
+        <div class="px-6 py-5 border-b border-sand-dark">
+            <p class="text-xs text-ink/40 uppercase tracking-wider mb-3">Informations voyageur</p>
+            <div class="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                    <span class="text-ink/50">Nom :</span>
+                    <span class="text-ink font-medium ml-1">{{ booking.guest_first_name }} {{ booking.guest_last_name }}</span>
+                </div>
+                <div>
+                    <span class="text-ink/50">Email :</span>
+                    <span class="text-ink font-medium ml-1">{{ booking.guest_email }}</span>
+                </div>
+                {% if booking.guest_phone %}
+                <div>
+                    <span class="text-ink/50">Téléphone :</span>
+                    <span class="text-ink font-medium ml-1">{{ booking.guest_phone }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% if booking.special_requests %}
+            <div class="mt-3 bg-sand-light rounded-xl p-3 text-sm">
+                <span class="text-ink/50 text-xs uppercase tracking-wider">Demandes spéciales :</span>
+                <p class="text-ink mt-1">{{ booking.special_requests }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Price breakdown -->
+        <div class="px-6 py-5 border-b border-sand-dark">
+            <p class="text-xs text-ink/40 uppercase tracking-wider mb-3">Détail du prix</p>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between text-ink/70">
+                    <span>{{ booking.price_per_night|floatformat:0 }} MAD × {{ booking.num_nights }} nuit{% if booking.num_nights > 1 %}s{% endif %}</span>
+                    <span>{{ booking.total_price|floatformat:0 }} MAD</span>
+                </div>
+                <div class="flex justify-between text-ink/70">
+                    <span>Taxes (10%)</span>
+                    <span>{{ booking.taxes|floatformat:0 }} MAD</span>
+                </div>
+                <div class="flex justify-between font-bold text-ink border-t border-sand-dark pt-2">
+                    <span>Total à payer</span>
+                    <span class="text-terracotta text-lg">{{ booking.grand_total|floatformat:0 }} MAD</span>
+                </div>
+                <p class="text-xs text-ink/40 text-center">Paiement à régler directement à l'établissement</p>
+            </div>
+        </div>
+
+        <!-- Important notes -->
+        <div class="px-6 py-5 bg-sand-light">
+            <p class="text-xs text-ink/40 uppercase tracking-wider mb-3">Informations importantes</p>
+            <ul class="space-y-2 text-sm text-ink/70">
+                <li class="flex items-start gap-2">
+                    <i data-lucide="check-circle" class="icon-modern text-terracotta mt-0.5"></i> Présentez ce bon de réservation (numéro <strong>{{ booking.reference }}</strong>) à l'arrivée.
+                </li>
+                <li class="flex items-start gap-2">
+                    <i data-lucide="check-circle" class="icon-modern text-terracotta mt-0.5"></i> Le paiement s'effectue directement à l'établissement.
+                </li>
+                <li class="flex items-start gap-2">
+                    <i data-lucide="check-circle" class="icon-modern text-terracotta mt-0.5"></i> En cas de question, contactez-nous via la messagerie de votre espace voyageur.
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mt-6">
+        <a href="{% url 'traveler:reservations' %}" class="text-sm text-ink/50 hover:text-ink transition">
+      <i data-lucide="arrow-left" class="icon-modern"></i> Mes réservations
+    </a>
+        <div class="flex gap-3">
+            <button onclick="window.print()" class="flex items-center gap-2 border border-sand-dark text-ink px-4 py-2 rounded-xl text-sm hover:bg-sand transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+          <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        Imprimer
+      </button>
+            <a href="{% url 'properties:detail' booking.room.property.slug %}" class="flex items-center gap-2 bg-terracotta text-white px-4 py-2 rounded-xl text-sm hover:bg-terracotta-dark transition">
+        Voir l'établissement
+      </a>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    @media print {
+        nav,
+        footer,
+        .no-print {
+            display: none !important;
+        }
+        body {
+            background: white !important;
+        }
+        #voucher {
+            box-shadow: none !important;
+            border: 1px solid #ddd !important;
+        }
+    }
+</style>
+{% endblock %}

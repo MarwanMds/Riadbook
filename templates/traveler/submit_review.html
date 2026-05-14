@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load i18n_extras %}
+{% block title %}{% trans "property.write_review" %} — {{ booking.room.property.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-10">
+
+  <!-- Breadcrumb -->
+  <div class="flex items-center gap-2 text-sm text-ink/50 mb-6">
+    <a href="{% url 'traveler:reviews' %}" class="hover:text-terracotta transition">Mes avis</a>
+    <span>›</span>
+    <span class="text-ink">Nouvel avis</span>
+  </div>
+
+  <!-- Property info card -->
+  <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-5 mb-8 flex items-center gap-4">
+    {% with booking.room.property.photos.first as cover %}
+    {% if cover %}
+    <img src="{{ cover.image.url }}" alt="" class="w-20 h-20 object-cover rounded-xl shrink-0">
+    {% else %}
+    <div class="w-20 h-20 bg-sand rounded-xl flex items-center justify-center text-3xl shrink-0"><i data-lucide="landmark" class="icon-modern"></i></div>
+    {% endif %}
+    {% endwith %}
+    <div>
+      <h2 class="font-display text-xl text-ink">{{ booking.room.property.name }}</h2>
+      <p class="text-sm text-ink/50">{{ booking.room.property.city|translated_name }}</p>
+      <p class="text-sm text-ink/50 mt-1">
+        Séjour du {{ booking.check_in|date:"d/m/Y" }} au {{ booking.check_out|date:"d/m/Y" }}
+        · {{ booking.room.name }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Review form -->
+  <form method="post" class="space-y-6">
+    {% csrf_token %}
+
+    <!-- Overall rating — interactive stars -->
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-6">
+      <label class="block font-semibold text-ink mb-4">
+        Note globale <span class="text-terracotta">*</span>
+      </label>
+      <div class="flex items-center gap-3">
+        {% for i in "12345" %}
+        <button type="button"
+                data-value="{{ forloop.counter }}"
+                class="star-main rating-star text-4xl text-sand-dark hover:text-gold transition focus:outline-none"
+                onclick="setMainRating({{ forloop.counter }})"><i data-lucide="star" class="icon-modern"></i></button>
+        {% endfor %}
+        <span id="main-rating-label" class="text-sm text-ink/50 ml-2"></span>
+      </div>
+      <input type="hidden" name="rating_overall" id="rating_overall" value="">
+      {% if form.rating_overall.errors %}
+      <p class="text-red-500 text-sm mt-2">{{ form.rating_overall.errors.as_text }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Sub-ratings -->
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-6">
+      <h3 class="font-semibold text-ink mb-5">
+        Notes détaillées
+        <span class="text-ink/40 font-normal text-sm ml-1">(optionnel)</span>
+      </h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+        <div>
+          <label class="block text-sm font-medium text-ink mb-2">Propreté</label>
+          <div class="flex gap-1">
+            {% for i in "12345" %}
+            <button type="button" data-field="rating_cleanliness" data-value="{{ forloop.counter }}"
+                    class="sub-star rating-star text-2xl text-sand-dark hover:text-gold transition"
+                    onclick="setSubRating('rating_cleanliness', {{ forloop.counter }})"><i data-lucide="star" class="icon-modern"></i></button>
+            {% endfor %}
+          </div>
+          <input type="hidden" name="rating_cleanliness" id="rating_cleanliness" value="">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-ink mb-2">Emplacement</label>
+          <div class="flex gap-1">
+            {% for i in "12345" %}
+            <button type="button" data-field="rating_location" data-value="{{ forloop.counter }}"
+                    class="sub-star rating-star text-2xl text-sand-dark hover:text-gold transition"
+                    onclick="setSubRating('rating_location', {{ forloop.counter }})"><i data-lucide="star" class="icon-modern"></i></button>
+            {% endfor %}
+          </div>
+          <input type="hidden" name="rating_location" id="rating_location" value="">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-ink mb-2">Rapport qualité/prix</label>
+          <div class="flex gap-1">
+            {% for i in "12345" %}
+            <button type="button" data-field="rating_value" data-value="{{ forloop.counter }}"
+                    class="sub-star rating-star text-2xl text-sand-dark hover:text-gold transition"
+                    onclick="setSubRating('rating_value', {{ forloop.counter }})"><i data-lucide="star" class="icon-modern"></i></button>
+            {% endfor %}
+          </div>
+          <input type="hidden" name="rating_value" id="rating_value" value="">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-ink mb-2">Service</label>
+          <div class="flex gap-1">
+            {% for i in "12345" %}
+            <button type="button" data-field="rating_service" data-value="{{ forloop.counter }}"
+                    class="sub-star rating-star text-2xl text-sand-dark hover:text-gold transition"
+                    onclick="setSubRating('rating_service', {{ forloop.counter }})"><i data-lucide="star" class="icon-modern"></i></button>
+            {% endfor %}
+          </div>
+          <input type="hidden" name="rating_service" id="rating_service" value="">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Text review -->
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-6 space-y-4">
+      <div>
+        <label for="id_title" class="block text-sm font-medium text-ink mb-1">Titre de l'avis</label>
+        <input type="text" name="title" id="id_title"
+               value="{{ form.title.value|default:'' }}"
+               placeholder="Résumez votre séjour en une phrase"
+               class="w-full border border-sand-dark rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30 bg-white">
+      </div>
+      <div>
+        <label for="id_comment" class="block text-sm font-medium text-ink mb-1">
+          Votre avis <span class="text-terracotta">*</span>
+        </label>
+        <textarea name="comment" id="id_comment" rows="5"
+                  placeholder="Décrivez votre expérience, les points forts, les points à améliorer…"
+                  class="w-full border border-sand-dark rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30 bg-white resize-none">{{ form.comment.value|default:'' }}</textarea>
+        {% if form.comment.errors %}
+        <p class="text-red-500 text-sm mt-1">{{ form.comment.errors.as_text }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-between">
+      <a href="{% url 'traveler:reviews' %}" class="text-sm text-ink/50 hover:text-ink transition">
+        <i data-lucide="arrow-left" class="icon-modern"></i> Annuler
+      </a>
+      <button type="submit"
+              class="bg-terracotta text-white px-8 py-3 rounded-xl font-medium hover:bg-terracotta-dark transition">
+        Publier mon avis
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  const mainLabels = ['', 'Décevant ', 'Passable ', 'Bien ', 'Très bien ', 'Excellent '];
+
+  function setMainRating(val) {
+    document.getElementById('rating_overall').value = val;
+    document.getElementById('main-rating-label').textContent = mainLabels[val];
+    document.querySelectorAll('.star-main').forEach(btn => {
+      btn.style.color = parseInt(btn.dataset.value) <= val ? '#C9973A' : '';
+      btn.classList.toggle('text-gold', parseInt(btn.dataset.value) <= val);
+      btn.classList.toggle('text-sand-dark', parseInt(btn.dataset.value) > val);
+    });
+  }
+
+  function setSubRating(field, val) {
+    document.getElementById(field).value = val;
+    document.querySelectorAll(`.sub-star[data-field="${field}"]`).forEach(btn => {
+      btn.style.color = parseInt(btn.dataset.value) <= val ? '#C9973A' : '';
+    });
+  }
+</script>
+{% endblock %}

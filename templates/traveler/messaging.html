@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load i18n_extras %}
+{% block title %}{% trans "dashboard.messages" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-10">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="font-display text-3xl text-ink">{% trans "dashboard.messages" %}</h1>
+      <p class="text-ink/50 mt-1">Correspondance avec l'équipe RiadBook</p>
+    </div>
+    <a href="{% url 'traveler:new_conversation' %}"
+       class="inline-flex items-center gap-2 bg-terracotta text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-terracotta-dark transition">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+      </svg>
+      {% trans "common.save" %}
+    </a>
+  </div>
+
+  {% if conversations %}
+  <div class="space-y-3">
+    {% for conv in conversations %}
+    <a href="{% url 'traveler:conversation' conv.pk %}"
+       class="flex items-start gap-4 bg-white rounded-2xl border
+              {% if conv.unread_by_traveler > 0 %}border-terracotta/40 shadow-md{% else %}border-sand-dark shadow-sm{% endif %}
+              p-5 hover:shadow-md transition group">
+
+      <!-- Icon -->
+      <div class="w-11 h-11 rounded-full bg-sand flex items-center justify-center shrink-0 text-xl">
+        {% if conv.property %}<i data-lucide="landmark" class="icon-modern"></i>{% else %}<i data-lucide="message-circle" class="icon-modern"></i>{% endif %}
+      </div>
+
+      <!-- Content -->
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between gap-2">
+          <h3 class="font-semibold text-ink truncate
+                     {% if conv.unread_by_traveler > 0 %}text-terracotta{% endif %}">
+            {{ conv.subject }}
+          </h3>
+          <div class="flex items-center gap-2 shrink-0">
+            {% if conv.unread_by_traveler > 0 %}
+            <span class="bg-terracotta text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              {{ conv.unread_by_traveler }}
+            </span>
+            {% endif %}
+            <span class="text-xs text-ink/40">
+              {% if conv.last_message_at %}
+                {{ conv.last_message_at|date:"d/m/Y" }}
+              {% else %}
+                {{ conv.created_at|date:"d/m/Y" }}
+              {% endif %}
+            </span>
+          </div>
+        </div>
+
+        {% if conv.property %}
+        <p class="text-xs text-zellige mt-0.5">{{ conv.property.name }}</p>
+        {% endif %}
+
+        <!-- Last message preview -->
+        {% with conv.messages.last as last_msg %}
+        {% if last_msg %}
+        <p class="text-sm text-ink/50 mt-1 truncate">
+          {% if last_msg.sender_type == 'admin' %}
+            <span class="text-ink/40">Réponse :</span>
+          {% else %}
+            <span class="text-ink/40">Vous :</span>
+          {% endif %}
+          {{ last_msg.body|truncatechars:80 }}
+        </p>
+        {% endif %}
+        {% endwith %}
+      </div>
+
+      <!-- Status badge -->
+      <div class="shrink-0">
+        <span class="text-xs px-2 py-1 rounded-full
+          {% if conv.status == 'open' %}bg-green-100 text-green-700
+          {% elif conv.status == 'closed' %}bg-gray-100 text-gray-500
+          {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+          {% if conv.status == 'open' %}{{ conv.status|conv_status_label }}
+          {% elif conv.status == 'closed' %}{{ conv.status|conv_status_label }}
+          {% else %}En attente{% endif %}
+        </span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="text-center py-20">
+    <div class="text-6xl mb-4"><i data-lucide="message-circle" class="icon-modern"></i></div>
+    <h2 class="font-display text-2xl text-ink mb-2">Aucun message pour l'instant</h2>
+    <p class="text-ink/50 mb-6">Vous avez une question sur un établissement ou votre réservation ?</p>
+    <a href="{% url 'traveler:new_conversation' %}"
+       class="inline-block bg-terracotta text-white px-6 py-3 rounded-xl font-medium hover:bg-terracotta-dark transition">
+      {% trans "common.save" %}
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

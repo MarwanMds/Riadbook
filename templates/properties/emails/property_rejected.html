@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #F2E8D9; margin: 0; padding: 20px; }
+    .card { background: white; max-width: 540px; margin: 0 auto; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .header { background: #C0623B; padding: 32px; text-align: center; }
+    .header h1 { color: white; font-size: 22px; margin: 0 0 6px; font-family: Georgia, serif; letter-spacing: 1px; }
+    .header p { color: rgba(255,255,255,0.85); margin: 0; font-size: 13px; }
+    .status-badge { display: inline-block; background: #E74C3C; color: white; padding: 8px 24px; border-radius: 50px; font-size: 14px; font-weight: 700; margin: 24px 0 4px; }
+    .body { padding: 32px; }
+    .body p { color: #444; font-size: 15px; line-height: 1.7; margin: 0 0 16px; }
+    .property-box { background: #FDF6EE; border: 1px solid #E8D5C0; border-radius: 12px; padding: 20px 24px; margin: 24px 0; }
+    .property-box .name { font-size: 18px; font-weight: 700; color: #C0623B; font-family: Georgia, serif; margin: 0 0 4px; }
+    .property-box .city { font-size: 13px; color: #888; }
+    .reason-box { background: #FFF5F5; border-left: 4px solid #E74C3C; padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 14px; color: #666; line-height: 1.6; }
+    .tips { list-style: none; padding: 0; margin: 0 0 24px; }
+    .tips li { font-size: 14px; color: #555; padding: 7px 0; border-bottom: 1px solid #F0EAE0; display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
+    .tips li:last-child { border-bottom: none; }
+    .tips li::before { content: "›"; color: #C0623B; font-weight: 700; font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+    .btn { display: inline-block; background: #C0623B; color: white; text-decoration: none; padding: 14px 36px; border-radius: 50px; font-size: 15px; font-weight: 600; }
+    .cta-block { text-align: center; margin: 28px 0; }
+    .footer { text-align: center; font-size: 11px; color: #bbb; padding: 20px 16px; border-top: 1px solid #F0EAE0; line-height: 1.7; }
+    .footer a { color: #C0623B; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h1>RiadBook Maroc</h1>
+      <p>Hôtels &amp; Riads au Maroc</p>
+    </div>
+
+    <div class="body">
+      <div style="text-align:center">
+        <div class="status-badge">Établissement Non Approuvé</div>
+      </div>
+
+      <p>Bonjour <strong>{{ owner.first_name }}</strong>,</p>
+      <p>
+        Nous avons examiné votre établissement et, après vérification, nous ne sommes malheureusement pas en mesure
+        de l'approuver pour le moment. Cela ne signifie pas que votre dossier est définitivement refusé.
+      </p>
+
+      <div class="property-box">
+        <div class="name">{{ property.name }}</div>
+        <div class="city">{{ property.city.name }}, Maroc</div>
+      </div>
+
+      {% if rejection_reason %}
+      <div class="reason-box">
+        <strong>Motif indiqué par notre équipe :</strong><br>
+        {{ rejection_reason }}
+      </div>
+      {% endif %}
+
+      <p>Pour améliorer votre dossier et soumettre une nouvelle demande, voici nos recommandations :</p>
+      <ul class="tips">
+        <li>Ajouter au moins 5 photos de haute qualité de l'établissement et des chambres</li>
+        <li>Compléter entièrement la description (adresse précise, équipements, règles de la maison)</li>
+        <li>Vérifier que les informations de contact sont correctes et joignables</li>
+        <li>S'assurer que votre établissement dispose d'une licence d'hébergement valide au Maroc</li>
+      </ul>
+
+      <div class="cta-block">
+        <a href="{{ site_url }}/owner/property/edit/" class="btn">Modifier mon établissement</a>
+      </div>
+
+      <p style="font-size:13px;color:#999;text-align:center;margin:0;">
+        Besoin de précisions ? Contactez-nous à <a href="mailto:support@riadbook.ma" style="color:#C0623B;">support@riadbook.ma</a>
+      </p>
+    </div>
+
+    <div class="footer">
+      © 2025 RiadBook Maroc — Tous droits réservés<br>
+      <a href="{{ site_url }}">www.riadbook.ma</a> · <a href="{{ site_url }}/legal/privacy/">Confidentialité</a>
+    </div>
+  </div>
+</body>
+</html>

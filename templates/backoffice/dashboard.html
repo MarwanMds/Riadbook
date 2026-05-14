@@ -1,0 +1,151 @@
+{% extends "backoffice/_layout.html" %}
+{% load i18n %}
+{% load i18n_extras %}
+{% block title %}Admin — Dashboard{% endblock %}
+
+{% block admin_content %}
+<div class="mb-6">
+  <h1 class="font-display text-2xl text-ink">Tableau de bord</h1>
+  <p class="text-ink/50 text-sm mt-1">Vue d'ensemble de la plateforme</p>
+</div>
+
+<!-- Stats grid -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <div class="bg-white rounded-2xl border border-sand-dark p-5 shadow-sm">
+    <div class="text-3xl font-bold text-terracotta">{{ stats.total_users }}</div>
+    <div class="text-sm text-ink/50 mt-1">Utilisateurs</div>
+  </div>
+  <div class="bg-white rounded-2xl border border-sand-dark p-5 shadow-sm">
+    <div class="text-3xl font-bold text-zellige">{{ stats.total_properties }}</div>
+    <div class="text-sm text-ink/50 mt-1">Établissements</div>
+    {% if stats.pending_properties %}
+    <div class="text-xs text-gold-dark mt-1 font-medium">{{ stats.pending_properties }} en attente</div>
+    {% endif %}
+  </div>
+  <div class="bg-white rounded-2xl border border-sand-dark p-5 shadow-sm">
+    <div class="text-3xl font-bold text-ink">{{ stats.bookings_month }}</div>
+    <div class="text-sm text-ink/50 mt-1">Réservations (mois)</div>
+  </div>
+  <div class="bg-white rounded-2xl border border-sand-dark p-5 shadow-sm">
+    <div class="text-3xl font-bold text-gold-dark">{{ stats.revenue_month|floatformat:0 }}</div>
+    <div class="text-sm text-ink/50 mt-1">Revenus MAD (mois)</div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+  <!-- Recent bookings -->
+  <div class="lg:col-span-2 bg-white rounded-2xl border border-sand-dark shadow-sm overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-sand">
+      <h2 class="font-semibold text-ink">Dernières réservations</h2>
+      <a href="{% url 'backoffice:bookings' %}" class="text-xs text-terracotta hover:underline">Tout voir <i data-lucide="arrow-right" class="icon-modern"></i></a>
+    </div>
+    <div class="divide-y divide-sand">
+      {% for booking in recent_bookings %}
+      <div class="px-5 py-3 flex items-center justify-between text-sm">
+        <div>
+          <span class="font-mono text-xs text-ink/40 mr-2">{{ booking.reference }}</span>
+          <span class="font-medium">{{ booking.guest_first_name }} {{ booking.guest_last_name }}</span>
+          <span class="text-ink/50 ml-1">— {{ booking.room.property.name }}</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="font-semibold text-terracotta">{{ booking.grand_total }} MAD</span>
+          {% if booking.status == 'confirmed' %}
+            <span class="text-xs bg-zellige/10 text-zellige px-2 py-0.5 rounded-full">{{ booking|status_label }}</span>
+          {% elif booking.status == 'cancelled' %}
+            <span class="text-xs bg-red-100 text-red-500 px-2 py-0.5 rounded-full">{{ booking|status_label }}</span>
+          {% elif booking.status == 'completed' %}
+            <span class="text-xs bg-sand text-ink/50 px-2 py-0.5 rounded-full">{{ booking|status_label }}</span>
+          {% else %}
+            <span class="text-xs bg-gold/10 text-gold-dark px-2 py-0.5 rounded-full">{{ booking.get_status_display }}</span>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <div class="px-5 py-8 text-center text-ink/40 text-sm">Aucune réservation</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Action cards -->
+  <div class="space-y-4">
+
+    <!-- Pending properties -->
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-sand">
+        <h2 class="font-semibold text-ink">Établissements à valider</h2>
+        <span class="bg-gold/10 text-gold-dark text-xs font-bold px-2 py-0.5 rounded-full">
+          {{ stats.pending_properties }}
+        </span>
+      </div>
+      <div class="divide-y divide-sand">
+        {% for prop in pending_properties %}
+        <div class="px-4 py-3 text-sm">
+          <p class="font-medium text-ink">{{ prop.name }}</p>
+          <p class="text-xs text-ink/40">{{ prop.owner.full_name }} — {{ prop.city.name }}</p>
+          <div class="flex gap-2 mt-2">
+            <form method="post" action="{% url 'backoffice:property_action' prop.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="approve">
+              <button class="text-xs bg-zellige/10 text-zellige hover:bg-zellige hover:text-white px-3 py-1 rounded-lg transition-colors font-medium">
+                <i data-lucide="check-circle" class="icon-modern"></i> Approuver
+              </button>
+            </form>
+            <form method="post" action="{% url 'backoffice:property_action' prop.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="reject">
+              <button class="text-xs bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1 rounded-lg transition-colors font-medium">
+                <i data-lucide="x-circle" class="icon-modern"></i> Rejeter
+              </button>
+            </form>
+          </div>
+        </div>
+        {% empty %}
+        <div class="px-4 py-6 text-center text-ink/40 text-sm">Aucun en attente <i data-lucide="check" class="icon-modern"></i></div>
+        {% endfor %}
+      </div>
+      {% if stats.pending_properties %}
+      <a href="{% url 'backoffice:properties' %}?status=pending"
+         class="block text-center text-xs text-terracotta py-3 border-t border-sand hover:bg-sand-light">
+        Voir tout <i data-lucide="arrow-right" class="icon-modern"></i>
+      </a>
+      {% endif %}
+    </div>
+
+    <!-- Pending reviews -->
+    {% if stats.pending_reviews %}
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold text-ink text-sm">Avis à modérer</h2>
+        <span class="bg-gold/10 text-gold-dark text-xs font-bold px-2 py-0.5 rounded-full">
+          {{ stats.pending_reviews }}
+        </span>
+      </div>
+      <a href="{% url 'backoffice:reviews' %}?status=pending"
+         class="block text-center bg-terracotta/10 text-terracotta hover:bg-terracotta hover:text-white
+                py-2 rounded-xl text-sm font-medium transition-colors">
+        Modérer les avis <i data-lucide="arrow-right" class="icon-modern"></i>
+      </a>
+    </div>
+    {% endif %}
+
+    <!-- Messages -->
+    {% if stats.open_conversations %}
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold text-ink text-sm">Messages non lus</h2>
+        <span class="bg-red-100 text-red-500 text-xs font-bold px-2 py-0.5 rounded-full">
+          {{ stats.open_conversations }}
+        </span>
+      </div>
+      <a href="{% url 'backoffice:messaging' %}"
+         class="block text-center bg-terracotta/10 text-terracotta hover:bg-terracotta hover:text-white
+                py-2 rounded-xl text-sm font-medium transition-colors">
+        Voir les messages <i data-lucide="arrow-right" class="icon-modern"></i>
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

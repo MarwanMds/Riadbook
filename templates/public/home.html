@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load i18n_extras %} {% block title %}Accueil — Réservez les meilleurs Riads & Hôtels du Maroc{% endblock %} {% block content %}
+
+<!-- ═══════════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════════ -->
+<section class="relative bg-ink overflow-hidden min-h-[520px] flex items-center">
+    <!-- Moroccan geometric overlay -->
+    <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(0deg,transparent,transparent 40px,#C0623B 40px,#C0623B 41px),
+                                repeating-linear-gradient(90deg,transparent,transparent 40px,#C0623B 40px,#C0623B 41px);">
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-r from-ink via-ink/90 to-transparent"></div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+        <div class="max-w-xl">
+            <div class="flex items-center gap-2 mb-4">
+                <div class="h-px w-8 bg-terracotta"></div>
+                <span class="text-terracotta text-xs font-body tracking-widest uppercase">{% trans "home.authentic_label" %}</span>
+            </div>
+            <h1 class="font-display text-4xl sm:text-5xl font-bold text-white leading-tight mb-4">
+                Découvrez les Riads<br/>
+                <span class="text-terracotta italic">& Hôtels du Maroc</span>
+            </h1>
+            <p class="text-sand/60 text-base mb-8 font-body">
+                {% trans "home.hero_subtitle" %}
+            </p>
+
+            <!-- Search bar -->
+            <form action="/search/" method="get" class="bg-white rounded-2xl p-3 shadow-xl flex flex-col sm:flex-row gap-2">
+                <select name="city" class="flex-1 px-4 py-2.5 rounded-xl bg-sand-light text-sm text-ink
+                       border border-sand-dark focus:outline-none focus:ring-2 focus:ring-terracotta/30
+                       focus:border-terracotta font-body">
+          <option value="">{% trans "home.search_placeholder_city" %}</option>
+          {% for city in cities %}
+          <option value="{{ city.id }}">{{ city|translated_name }}</option>
+          {% endfor %}
+        </select>
+                <input type="date" name="check_in" class="flex-1 px-4 py-2.5 rounded-xl bg-sand-light text-sm text-ink
+                      border border-sand-dark focus:outline-none focus:ring-2 focus:ring-terracotta/30
+                      focus:border-terracotta font-body" />
+                <input type="date" name="check_out" class="flex-1 px-4 py-2.5 rounded-xl bg-sand-light text-sm text-ink
+                      border border-sand-dark focus:outline-none focus:ring-2 focus:ring-terracotta/30
+                      focus:border-terracotta font-body" />
+                <button type="submit" class="bg-terracotta hover:bg-terracotta-dark text-white px-6 py-2.5 rounded-xl
+                       text-sm font-medium transition-colors whitespace-nowrap">
+           Rechercher
+        </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     POPULAR CITIES
+═══════════════════════════════════════════════ -->
+<section class="max-w-7xl mx-auto px-4 py-14">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="font-display text-2xl font-bold text-ink">{% trans "home.popular_cities" %}</h2>
+            <p class="text-ink/40 text-sm mt-1">{% trans "home.popular_cities" %}</p>
+        </div>
+        <a href="/search/" class="text-terracotta text-sm hover:underline font-medium">{% trans "common.see_more" %} <i data-lucide="arrow-right" class="icon-modern"></i></a>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        {% for city in cities|slice:":10" %}
+        <a href="/search/?city={{ city.id }}" class="group relative bg-white rounded-2xl overflow-hidden border border-sand-dark
+          hover:border-terracotta/40 hover:shadow-md transition-all text-center">
+
+            <!-- Photo de la ville -->
+            <div class="h-28 bg-sand overflow-hidden">
+                {% if city.image %}
+                <img src="{{ city.image.url }}" alt="{{ city|translated_name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> {% else %}
+                <div class="w-full h-full flex items-center justify-center text-4xl text-ink/10"><i data-lucide="building-2" class="icon-modern"></i></div>
+                {% endif %}
+            </div>
+
+            <p class="font-display font-semibold text-ink text-sm group-hover:text-terracotta
+            transition-colors py-3 px-2">
+                {{ city|translated_name }}
+            </p>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     FEATURED PROPERTIES
+═══════════════════════════════════════════════ -->
+<section class="bg-sand py-14">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="font-display text-2xl font-bold text-ink">{% trans "home.featured_riads" %}</h2>
+                <p class="text-ink/40 text-sm mt-1">{% trans "home.featured_riads" %}</p>
+            </div>
+            <a href="/search/" class="text-terracotta text-sm hover:underline font-medium">{% trans "common.see_more" %} <i data-lucide="arrow-right" class="icon-modern"></i></a>
+        </div>
+
+        {% if featured_properties %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for property in featured_properties %} {% include "properties/_card.html" with property=property %} {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-16 text-ink/40">
+            <div class="w-14 h-14 rounded-2xl bg-sand border border-sand-dark flex items-center justify-center mx-auto mb-3 text-ink/50"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></div>
+            <p>Les établissements apparaîtront ici une fois approuvés.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     WHY RIADBOOK
+═══════════════════════════════════════════════ -->
+<section class="max-w-7xl mx-auto px-4 py-14">
+    <div class="text-center mb-10">
+        <h2 class="font-display text-2xl font-bold text-ink">{% trans "home.why_riadbook" %}</h2>
+        <div class="zellige-divider w-16 mx-auto mt-3 rounded-full"></div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+        {% for item in ""|ljust:3 %}{% endfor %}
+        <div class="text-center">
+            <div class="w-14 h-14 bg-terracotta/10 text-terracotta rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3v8Z"/><path d="m9 12 2 2 4-5"/></svg></div>
+            <h3 class="font-display font-semibold text-ink mb-2">{% trans "home.authentic_label" %}</h3>
+            <p class="text-ink/50 text-sm">Plateforme locale dédiée au patrimoine hôtelier marocain.</p>
+        </div>
+        <div class="text-center">
+            <div class="w-14 h-14 bg-zellige/10 text-zellige rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2L12 3Z"/></svg></div>
+            <h3 class="font-display font-semibold text-ink mb-2">Riads Authentiques</h3>
+            <p class="text-ink/50 text-sm">Label « Riad Authentique » pour garantir l'expérience culturelle.</p>
+        </div>
+        <div class="text-center">
+            <div class="w-14 h-14 bg-gold/10 text-gold-dark rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"/><path d="M8 10h8"/><path d="M8 14h5"/></svg></div>
+            <h3 class="font-display font-semibold text-ink mb-2">Réservation Simple</h3>
+            <p class="text-ink/50 text-sm">Réservez en moins de 3 minutes, confirmation par e-mail.</p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

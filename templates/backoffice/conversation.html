@@ -1,0 +1,72 @@
+{% extends "backoffice/_layout.html" %}
+{% load i18n %}
+{% block title %}Conversation — {{ conversation.subject }}{% endblock %}
+
+{% block admin_content %}
+<div class="flex items-center gap-3 mb-6">
+  <a href="{% url 'backoffice:messaging' %}" class="text-ink/40 hover:text-terracotta"><i data-lucide="arrow-left" class="icon-modern"></i> Retour</a>
+  <h1 class="font-display text-xl text-ink">{{ conversation.subject }}</h1>
+  <span class="text-xs {% if conversation.status == 'open' %}bg-zellige/10 text-zellige{% else %}bg-sand text-ink/50{% endif %} px-2 py-0.5 rounded-full">
+    {{ conversation.get_status_display }}
+  </span>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+  <!-- Messages -->
+  <div class="lg:col-span-3 space-y-4">
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-5 space-y-4 max-h-[60vh] overflow-y-auto">
+      {% for msg in messages %}
+      <div class="flex {% if msg.sender_type == 'admin' %}justify-end{% else %}justify-start{% endif %}">
+        <div class="max-w-[75%] {% if msg.sender_type == 'admin' %}bg-terracotta text-white{% else %}bg-sand-light text-ink{% endif %} rounded-2xl px-4 py-3 text-sm">
+          <p>{{ msg.body }}</p>
+          <p class="text-xs opacity-60 mt-1 {% if msg.sender_type == 'admin' %}text-right{% endif %}">
+            {{ msg.sender.full_name }} · {{ msg.created_at|date:"d M H:i" }}
+          </p>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-center text-ink/40 text-sm py-4">Aucun message</p>
+      {% endfor %}
+    </div>
+
+    <!-- Reply form -->
+    {% if conversation.status == 'open' %}
+    <form method="post" class="bg-white rounded-2xl border border-sand-dark shadow-sm p-4">
+      {% csrf_token %}
+      <textarea name="body" rows="3" placeholder="Votre réponse..."
+                class="w-full border border-sand-dark rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-none mb-3"></textarea>
+      <div class="flex gap-2">
+        <button type="submit" class="flex-1 bg-terracotta text-white py-2.5 rounded-xl text-sm font-medium hover:bg-terracotta-dark transition-colors">
+          Envoyer la réponse
+        </button>
+        <button type="submit" name="action" value="close"
+                class="bg-sand hover:bg-sand-dark text-ink py-2.5 px-4 rounded-xl text-sm font-medium transition-colors">
+          Fermer la conversation
+        </button>
+      </div>
+    </form>
+    {% endif %}
+  </div>
+
+  <!-- Info panel -->
+  <div class="space-y-4">
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-4 text-sm">
+      <h3 class="font-semibold text-ink mb-3">Voyageur</h3>
+      <p class="font-medium">{{ conversation.traveler.full_name }}</p>
+      <p class="text-ink/50">{{ conversation.traveler.email }}</p>
+      {% if conversation.traveler.phone %}
+      <p class="text-ink/50">{{ conversation.traveler.phone }}</p>
+      {% endif %}
+    </div>
+    {% if conversation.property %}
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-4 text-sm">
+      <h3 class="font-semibold text-ink mb-2">Établissement concerné</h3>
+      <p class="font-medium">{{ conversation.property.name }}</p>
+      <p class="text-ink/50">{{ conversation.property.city.name }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

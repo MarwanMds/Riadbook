@@ -1,0 +1,90 @@
+{% extends "owner/_layout.html" %}
+{% load i18n %}
+{% load i18n_extras %}
+{% block title %}Messages{% endblock %}
+
+{% block owner_content %}
+<div class="max-w-4xl">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="font-display text-2xl text-ink">Messages voyageurs</h1>
+      <p class="text-ink/50 mt-1">Conversations liées à vos établissements</p>
+    </div>
+    {% if conversations %}
+    <span class="text-sm text-ink/40">{{ conversations|length }} conversation{% if conversations|length != 1 %}s{% endif %}</span>
+    {% endif %}
+  </div>
+
+  {% if conversations %}
+  <div class="space-y-3">
+    {% for conv in conversations %}
+    <a href="{% url 'owner:conversation' conv.pk %}"
+       class="flex items-start gap-4 bg-white rounded-2xl border
+              {% if conv.unread_by_owner > 0 %}border-terracotta/40 shadow-md{% else %}border-sand-dark shadow-sm{% endif %}
+              p-5 hover:shadow-md transition group">
+
+      <!-- Avatar -->
+      <div class="w-11 h-11 rounded-full bg-sand flex items-center justify-center shrink-0 font-semibold text-terracotta text-sm">
+        {{ conv.traveler.first_name|first|upper }}{{ conv.traveler.last_name|first|upper }}
+      </div>
+
+      <!-- Content -->
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between gap-2 mb-0.5">
+          <h3 class="font-semibold text-ink truncate {% if conv.unread_by_owner > 0 %}text-terracotta{% endif %}">
+            {{ conv.subject }}
+          </h3>
+          <div class="flex items-center gap-2 shrink-0">
+            {% if conv.unread_by_owner > 0 %}
+            <span class="bg-terracotta text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              {{ conv.unread_by_owner }}
+            </span>
+            {% endif %}
+            <span class="text-xs text-ink/40">
+              {% if conv.last_message_at %}{{ conv.last_message_at|date:"d/m/Y" }}{% else %}{{ conv.created_at|date:"d/m/Y" }}{% endif %}
+            </span>
+          </div>
+        </div>
+
+        <p class="text-xs text-ink/50 mb-1">
+          De : <span class="text-ink font-medium">{{ conv.traveler.get_full_name }}</span>
+          {% if conv.property %}· <i data-lucide="landmark" class="icon-modern"></i> {{ conv.property.name }}{% endif %}
+        </p>
+
+        <!-- Last message preview -->
+        {% with conv.messages.last as last_msg %}
+        {% if last_msg %}
+        <p class="text-sm text-ink/50 truncate">
+          {% if last_msg.sender_type == 'owner' %}<span class="text-ink/40">Vous :</span>
+          {% else %}<span class="text-ink/40">{{ conv.traveler.first_name }} :</span>{% endif %}
+          {{ last_msg.body|truncatechars:80 }}
+        </p>
+        {% endif %}
+        {% endwith %}
+      </div>
+
+      <!-- Status -->
+      <span class="shrink-0 text-xs px-2 py-1 rounded-full
+        {% if conv.status == 'open' %}bg-green-100 text-green-700
+        {% elif conv.status == 'closed' %}bg-gray-100 text-gray-500
+        {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+        {% if conv.status == 'open' %}{{ conv.status|conv_status_label }}
+        {% elif conv.status == 'closed' %}{{ conv.status|conv_status_label }}
+        {% else %}En attente{% endif %}
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="text-center py-20">
+    <div class="text-6xl mb-4"><i data-lucide="message-circle" class="icon-modern"></i></div>
+    <h2 class="font-display text-2xl text-ink mb-2">Aucun message pour l'instant</h2>
+    <p class="text-ink/50">Les voyageurs qui vous contactent via vos établissements apparaîtront ici.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

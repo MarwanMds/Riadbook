@@ -1,0 +1,148 @@
+{% extends "base.html" %} {% block title %}Riads Marocains Authentiques{% endblock %} {% block extra_head %}
+{% load i18n %}
+{% load i18n_extras %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">if (window.lucide) { lucide.createIcons(); }
+</script>
+{% endblock %} {% block content %}
+
+<!-- ── HERO ── -->
+<div class="relative bg-ink py-20 overflow-hidden">
+    <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(45deg,#C9973A 0,#C9973A 1px,transparent 0,transparent 30px);
+              background-size: 42px 42px;"></div>
+    <div class="relative z-10 max-w-4xl mx-auto px-4 text-center">
+        <p class="text-gold text-sm tracking-widest uppercase mb-3"><i data-lucide="sparkles" class="icon-modern"></i> Patrimoine Marocain</p>
+        <h1 class="font-display text-5xl font-bold text-white mb-4">Riads Authentiques</h1>
+        <p class="text-sand/60 text-lg max-w-2xl mx-auto">
+            Découvrez les plus beaux riads du Maroc — ces demeures traditionnelles à patio central classées par notre label d'authenticité.
+        </p>
+    </div>
+</div>
+
+<!-- ── CITY FILTER ── -->
+<div class="bg-white border-b border-sand-dark sticky top-16 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex gap-3 overflow-x-auto">
+        <a href="/riads/" class="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors
+              {% if not city_slug %}bg-terracotta text-white{% else %}bg-sand text-ink/70 hover:bg-sand-dark{% endif %}">
+      Tous
+    </a> {% for city in cities %}
+        <a href="/riads/?city={{ city.slug }}" class="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors
+              {% if city_slug == city.slug %}bg-terracotta text-white{% else %}bg-sand text-ink/70 hover:bg-sand-dark{% endif %}">
+      {{ city|translated_name }}
+    </a> {% endfor %}
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <!-- ── MAP ── -->
+        <div class="lg:sticky lg:top-32 h-fit">
+            <div id="riad-map" class="w-full rounded-2xl border border-sand-dark shadow-sm" style="height:500px;min-height:500px;"></div>
+            <p class="text-xs text-ink/30 text-center mt-2">Cliquez sur un marqueur pour voir le riad</p>
+        </div>
+
+        <!-- ── RIAD LIST ── -->
+        <div class="space-y-6">
+            <p class="text-sm text-ink/50">{{ riads|length }} riad{{ riads|length|pluralize }} trouvé{{ riads|length|pluralize }}</p>
+
+            {% for riad in riads %} {% with cover=riad.photos.first %}
+            <a href="/property/{{ riad.slug }}/" class="group flex gap-4 bg-white rounded-2xl border border-sand-dark p-4
+                hover:shadow-md transition-all hover:border-terracotta/30">
+                <!-- Photo -->
+                <div class="relative w-36 h-32 flex-shrink-0 rounded-xl overflow-hidden bg-sand-dark">
+                    {% if cover %}
+                    <img src="{{ cover.image.url }}" alt="{{ riad.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> {% else %}
+                    <div class="w-full h-full flex items-center justify-center text-3xl"><i data-lucide="home" class="icon-modern"></i></div>
+                    {% endif %}
+                </div>
+                <!-- Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between gap-2 mb-1">
+                        <h3 class="font-display font-semibold text-ink text-lg leading-tight">{{ riad.name }}</h3>
+                        {% if riad.is_authentic_riad %}
+                        <span class="flex-shrink-0 bg-gold/10 text-gold text-xs px-2 py-0.5 rounded-full font-medium border border-gold/20">
+              <i data-lucide="sparkles" class="icon-modern"></i> Authentique
+            </span> {% endif %}
+                    </div>
+                    <p class="text-xs text-ink/50 mb-2">{{ riad.city.name }}</p>
+                    <p class="text-sm text-ink/60 line-clamp-2 leading-relaxed">
+                        {{ riad.description|truncatewords:20 }}
+                    </p>
+                    <div class="flex items-center justify-between mt-3">
+                        <div class="flex items-center gap-3">
+                            {% if riad.avg_rating %}
+                            <span class="text-xs text-terracotta font-medium star-icon"><i data-lucide="star" class="icon-modern"></i> {{ riad.avg_rating }}</span> {% endif %} {% if riad.free_cancellation %}
+                            <span class="text-xs text-zellige"><i data-lucide="check" class="icon-modern"></i> Annulation gratuite</span> {% endif %}
+                        </div>
+                        {% if riad.min_price %}
+                        <p class="text-sm font-semibold text-ink">
+                            {{ riad.min_price|floatformat:0 }} <span class="text-xs font-normal text-ink/40">MAD/nuit</span>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+            {% endwith %} {% empty %}
+            <div class="text-center py-16 text-ink/40">
+                <p class="text-5xl mb-4"><i data-lucide="home" class="icon-modern"></i></p>
+                <p class="font-display text-xl">Aucun riad pour cette ville.</p>
+                <a href="/riads/" class="inline-block mt-3 text-terracotta text-sm hover:underline">Voir tous les riads</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %} {% block extra_js %} {{ map_markers|json_script:"map_markers_data" }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mapEl = document.getElementById('riad-map');
+        if (!mapEl) return;
+
+        const map = L.map('riad-map').setView([31.79, -7.09], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Force Leaflet to recalculate size after layout is fully painted
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 200);
+
+        const markers = JSON.parse(document.getElementById('map_markers_data').textContent);
+        const bounds = [];
+
+        markers.forEach(m => {
+            if (!m.lat || !m.lng) return;
+            const icon = L.divIcon({
+                className: '',
+                html: `<div style="background:${m.authentic ? '#C9973A' : '#C0623B'};color:white;
+                         padding:5px 10px;border-radius:20px;font-size:11px;font-weight:700;
+                         box-shadow:0 2px 8px rgba(0,0,0,0.25);white-space:nowrap;">
+               ${m.authentic ? '<i data-lucide="sparkles" class="icon-modern"></i> ' : ''}${m.price ? m.price + ' MAD' : m.name.substring(0,12)}
+             </div>`,
+                iconAnchor: [30, 10],
+            });
+            L.marker([m.lat, m.lng], {
+                    icon
+                })
+                .addTo(map)
+                .bindPopup(`<strong>${m.name}</strong><br/>${m.city}<br/>
+                 <a href="/property/${m.slug}/" style="color:#C0623B;font-size:12px;">Voir le riad <i data-lucide="arrow-right" class="icon-modern"></i></a>`);
+            bounds.push([m.lat, m.lng]);
+        });
+
+        if (bounds.length > 0) {
+            map.fitBounds(bounds, {
+                padding: [50, 50]
+            });
+            // Second invalidateSize after fitBounds settles
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 400);
+        }
+    });
+if (window.lucide) { lucide.createIcons(); }
+</script>
+{% endblock %}

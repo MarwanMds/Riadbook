@@ -1,0 +1,135 @@
+{% extends "base.html" %} {% block title %}Riads Marocains Authentiques{% endblock %} {% block extra_head %}
+{% load i18n %}
+{% load i18n_extras %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" /> {% endblock %} {% block content %}
+
+<!-- Hero -->
+<div class="bg-ink relative overflow-hidden py-16 px-4">
+    <div class="absolute inset-0 opacity-5" style="background-image: repeating-linear-gradient(45deg,#C9973A 0,#C9973A 1px,transparent 0,transparent 50%);background-size: 20px 20px;"></div>
+    <div class="relative z-10 max-w-4xl mx-auto text-center">
+        <span class="text-gold text-sm tracking-widest uppercase font-body">Patrimoine & Authenticité</span>
+        <h1 class="font-display text-4xl font-bold text-white mt-2 mb-3">
+            Riads Marocains <span class="text-terracotta italic">Authentiques</span>
+        </h1>
+        <p class="text-sand/50 text-base max-w-xl mx-auto">
+            Ces maisons traditionnelles à patio central ont traversé les siècles. Chaque riad est une invitation au voyage dans le patrimoine architectural du Maroc.
+        </p>
+        <div class="zellige-divider w-20 mx-auto mt-5 opacity-40 rounded-full"></div>
+    </div>
+</div>
+
+<!-- City filter -->
+<div class="bg-white border-b border-sand-dark sticky top-16 z-[90] px-4 py-3">
+    <div class="max-w-6xl mx-auto flex items-center gap-3 overflow-x-auto pb-1">
+        <a href="/riads/" class="flex-shrink-0 px-4 py-1.5 rounded-full text-sm border transition-colors
+              {% if not city_slug %}bg-terracotta text-white border-terracotta
+              {% else %}border-sand-dark text-ink/60 hover:border-terracotta hover:text-terracotta{% endif %}">
+            {% trans "common.see_more" %} les villes
+        </a> {% for city in cities %}
+        <a href="/riads/?city={{ city.slug }}" class="flex-shrink-0 px-4 py-1.5 rounded-full text-sm border transition-colors
+              {% if city_slug == city.slug %}bg-terracotta text-white border-terracotta
+              {% else %}border-sand-dark text-ink/60 hover:border-terracotta hover:text-terracotta{% endif %}">
+            {{ city|translated_name }}
+        </a> {% endfor %}
+    </div>
+</div>
+
+<div class="max-w-6xl mx-auto px-4 py-8">
+
+    <!-- Interactive Map -->
+    <div id="riads-map" class="w-full rounded-2xl border border-sand-dark mb-8" style="height:380px;"></div>
+
+    <!-- Stats bar -->
+    <div class="flex items-center justify-between mb-6">
+        <p class="text-sm text-ink/50">
+            <span class="font-semibold text-ink">{{ total }}</span> riad{% if total != 1 %}s{% endif %} trouvé{% if total != 1 %}s{% endif %} {% if city_slug %} à <span class="text-terracotta font-medium">{{ city_slug|title }}</span>{% endif %}
+        </p>
+        <p class="text-xs text-ink/30"><i data-lucide="sparkles" class="icon-modern"></i> = Label Riad Authentique</p>
+    </div>
+
+    <!-- Riads grid -->
+    {% if riads %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for riad in riads %} {% include "properties/_card.html" with property=riad %} {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-20">
+        <p class="text-5xl mb-4"><i data-lucide="home" class="icon-modern"></i></p>
+        <p class="font-display text-xl font-semibold text-ink mb-2">Aucun riad trouvé</p>
+        <p class="text-ink/40 text-sm">Essayez une autre ville ou consultez toutes les destinations.</p>
+        <a href="/riads/" class="inline-block mt-4 text-sm text-terracotta hover:underline">Voir tous les riads</a>
+    </div>
+    {% endif %}
+
+    <!-- What is a riad -->
+    <div class="mt-16 bg-sand rounded-2xl p-8">
+        <div class="max-w-2xl">
+            <h2 class="font-display text-2xl font-bold text-ink mb-3">Qu'est-ce qu'un Riad ?</h2>
+            <p class="text-ink/70 leading-relaxed mb-4">
+                Un riad est une maison traditionnelle marocaine organisée autour d'un patio central. Typiquement introverts — sobres à l'extérieur, richement décorés à l'intérieur — les riads conjuguent zelliges, stucs sculptés, bois de cèdre et jardins avec fontaines.
+            </p>
+            <p class="text-ink/70 leading-relaxed">
+                Le label <strong class="text-gold"><i data-lucide="sparkles" class="icon-modern"></i> Riad Authentique</strong> de RiadBook est attribué aux établissements qui préservent les techniques artisanales marocaines et offrent une expérience culturelle genuine.
+            </p>
+        </div>
+    </div>
+</div>
+
+{% endblock %} {% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    (function() {
+        var mapEl = document.getElementById('riads-map');
+        if (!mapEl) return;
+
+        var mapData = {{ map_data|safe }};
+
+        var rMap = L.map('riads-map', {
+            scrollWheelZoom: false
+        }).setView([31.5, -6.5], 5);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 18
+        }).addTo(rMap);
+
+        var bounds = [];
+
+        mapData.forEach(function(r) {
+            if (!r.lat || !r.lng) return;
+
+            var color = r.auth ? '#C9973A' : '#C0623B';
+            var icon = L.divIcon({
+                html: '<div style="background:' + color + ';color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.3);">' + (r.auth ? '\u2756' : '\uD83C\uDFE1') + '</div>',
+                className: '',
+                iconSize: [32, 32],
+                iconAnchor: [16, 16]
+            });
+
+            L.marker([r.lat, r.lng], {
+                    icon: icon
+                })
+                .addTo(rMap)
+                .bindPopup(
+                    '<div style="font-family:sans-serif;min-width:160px;line-height:1.6;">' +
+                    (r.auth ? '<div style="color:#C9973A;font-size:11px;font-weight:600;margin-bottom:2px;">\u2756 Riad Authentique</div>' : '') +
+                    '<strong style="font-size:14px;">' + r.name + '</strong><br>' +
+                    '<span style="font-size:12px;color:#888;">' + r.city + '</span><br>' +
+                    (r.price ? '<span style="color:#C0623B;font-weight:600;">' + r.price + ' MAD/nuit</span><br>' : '') +
+                    '<a href="/property/' + r.slug + '/" style="font-size:12px;color:#C0623B;text-decoration:none;">Voir le riad \u2192</a>' +
+                    '</div>'
+                );
+
+            bounds.push([r.lat, r.lng]);
+        });
+
+        if (bounds.length > 1) {
+            rMap.fitBounds(bounds, {
+                padding: [40, 40]
+            });
+        } else if (bounds.length === 1) {
+            rMap.setView(bounds[0], 13);
+        }
+    })();
+</script>
+{% endblock %}

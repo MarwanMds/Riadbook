@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+{% load i18n %}
+<html lang="{{ LANGUAGE_CODE|default:'fr' }}" dir="{{ html_dir|default:'ltr' }}">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}RiadBook Maroc{% endblock %} — Hôtels & Riads au Maroc</title>
+    <meta name="description" content="{% block meta_description %}Réservez les meilleurs riads et hôtels au Maroc{% endblock %}" />
+
+    <!-- Google Fonts: Playfair Display + DM Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+    <!-- Modern icons: Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind CDN (swap for compiled in production) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        terracotta: {
+                            DEFAULT: '#C0623B',
+                            light: '#D4845F',
+                            dark: '#9B4A2A'
+                        },
+                        sand: {
+                            DEFAULT: '#F2E8D9',
+                            light: '#FAF5EE',
+                            dark: '#DDD0BC'
+                        },
+                        zellige: {
+                            DEFAULT: '#2D6A5E',
+                            light: '#3D8A7A',
+                            dark: '#1E4D44'
+                        },
+                        gold: {
+                            DEFAULT: '#C9973A',
+                            light: '#E0B060',
+                            dark: '#A87A25'
+                        },
+                        ink: {
+                            DEFAULT: '#1C1917',
+                            light: '#44403C'
+                        },
+                    },
+                    fontFamily: {
+                        display: ['"Playfair Display"', 'Georgia', 'serif'],
+                        body: ['"DM Sans"', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+        }
+        
+        h1,
+        h2,
+        h3,
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .zellige-divider {
+            background: repeating-linear-gradient(45deg, #C0623B 0px, #C0623B 2px, transparent 2px, transparent 10px);
+            height: 3px;
+        }
+        
+        .arch-clip {
+            clip-path: ellipse(50% 55% at 50% 100%);
+        }
+        
+        .star-filled {
+            color: #C9973A;
+        }
+        
+        .star-empty {
+            color: #DDD0BC;
+        }
+        
+        [dir="rtl"] .ltr-only {
+            display: none;
+        }
+        
+        [dir="rtl"] {
+            font-family: 'DM Sans', 'Segoe UI', Tahoma, sans-serif;
+        }
+        
+        .leaflet-pane,
+        .leaflet-tile,
+        .leaflet-marker-icon,
+        .leaflet-marker-shadow,
+        .leaflet-tile-container,
+        .leaflet-map-pane svg,
+        .leaflet-map-pane canvas {
+            z-index: 1 !important;
+        }
+        
+        .leaflet-overlay-pane {
+            z-index: 2 !important;
+        }
+        
+        .leaflet-shadow-pane {
+            z-index: 3 !important;
+        }
+        
+        .leaflet-marker-pane {
+            z-index: 4 !important;
+        }
+        
+        .leaflet-tooltip-pane {
+            z-index: 5 !important;
+        }
+        
+        .leaflet-popup-pane {
+            z-index: 6 !important;
+        }
+        
+        .leaflet-top,
+        .leaflet-bottom {
+            z-index: 7 !important;
+        }
+        
+        .jelly {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .j-terracotta {
+            background: linear-gradient(135deg, #F0845F, #C0623B);
+            box-shadow: 0 3px 8px rgba(192, 98, 59, .4);
+        }
+        
+        .j-zellige {
+            background: linear-gradient(135deg, #3D8A7A, #2D6A5E);
+            box-shadow: 0 3px 8px rgba(45, 106, 94, .4);
+        }
+        
+        .j-gold {
+            background: linear-gradient(135deg, #E0B060, #C9973A);
+            box-shadow: 0 3px 8px rgba(201, 151, 58, .4);
+        }
+        
+        .j-rose {
+            background: linear-gradient(135deg, #FB7185, #E11D48);
+            box-shadow: 0 3px 8px rgba(225, 29, 72, .4);
+        }
+        
+        .j-purple {
+            background: linear-gradient(135deg, #A78BFA, #7C3AED);
+            box-shadow: 0 3px 8px rgba(124, 58, 237, .4);
+        }
+        
+        .j-blue {
+            background: linear-gradient(135deg, #60A5FA, #3B82F6);
+            box-shadow: 0 3px 8px rgba(59, 130, 246, .4);
+        }
+        
+        .j-sand {
+            background: linear-gradient(135deg, #F2E8D9, #DDD0BC);
+            box-shadow: 0 3px 8px rgba(192, 98, 59, .15);
+        }
+        
+        .j-ink {
+            background: linear-gradient(135deg, #44403C, #1C1917);
+            box-shadow: 0 3px 8px rgba(28, 25, 23, .4);
+        }
+        
+
+        .icon-modern {
+            width: 1em;
+            height: 1em;
+            display: inline-block;
+            vertical-align: -0.125em;
+            stroke-width: 2.2;
+        }
+
+        .icon-pill {
+            width: 18px;
+            height: 18px;
+            display: inline-block;
+            vertical-align: -0.18em;
+            stroke-width: 2.2;
+        }
+        .jelly svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: white;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .rating-star svg,
+        .star-icon svg {
+            fill: currentColor;
+            stroke: currentColor;
+        }
+
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="bg-sand-light text-ink min-h-screen flex flex-col">
+
+    <!-- ── NAVBAR ── -->
+    {% include "partials/navbar.html" %}
+
+    <!-- ── MESSAGES (overridable by child layouts like owner/_layout.html) ── -->
+    {% block django_messages %} {% if messages %}
+    <div class="max-w-4xl mx-auto px-4 pt-4 space-y-2">
+        {% for message in messages %}
+        <div class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-body
+            {% if message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200
+            {% elif message.tags == 'success' %}bg-zellige/10 text-zellige-dark border border-zellige/20
+            {% else %}bg-gold/10 text-gold-dark border border-gold/20{% endif %}">
+            <span>{{ message }}</span>
+            <button onclick="this.parentElement.remove()" class="ml-auto opacity-60 hover:opacity-100"><i data-lucide="x" class="icon-modern"></i></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %} {% endblock django_messages %}
+
+    <!-- ── MAIN CONTENT ── -->
+    <main class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ── FOOTER ── -->
+    {% include "partials/footer.html" %} {% block extra_js %}{% endblock %}
+    <script>
+        if (window.lucide) { lucide.createIcons(); }
+    </script>
+</body>
+
+</html>

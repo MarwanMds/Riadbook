@@ -1,0 +1,62 @@
+{% extends "owner/_layout.html" %}
+{% load i18n %}
+{% block title %}Supprimer {{ prop.name }}{% endblock %}
+
+{% block owner_content %}
+<div class="max-w-lg mx-auto">
+
+  <div class="text-center mb-8">
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+      <span class="text-3xl"><i data-lucide="trash-2" class="icon-modern"></i></span>
+    </div>
+    <h1 class="font-display text-2xl text-ink">Supprimer l'établissement</h1>
+    <p class="text-ink/50 mt-1 text-sm">Cette action est irréversible</p>
+  </div>
+
+  <!-- Property summary -->
+  <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-5 mb-6">
+    <div class="flex items-center gap-4">
+      {% with prop.photos.first as cover %}
+      {% if cover %}
+      <img src="{{ cover.image.url }}" alt="" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
+      {% else %}
+      <div class="w-16 h-16 rounded-xl bg-sand flex items-center justify-center flex-shrink-0">
+        <span class="text-2xl"><i data-lucide="landmark" class="icon-modern"></i></span>
+      </div>
+      {% endif %}
+      {% endwith %}
+      <div>
+        <p class="font-display text-lg font-semibold text-ink">{{ prop.name }}</p>
+        <p class="text-sm text-ink/50">{{ prop.get_property_type_display }} — {{ prop.city.name }}</p>
+        <p class="text-xs text-ink/40 mt-1">{{ prop.rooms.count }} chambre{{ prop.rooms.count|pluralize }} · {{ prop.get_status_display }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Warning -->
+  <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 text-sm text-red-700">
+    <i data-lucide="triangle-alert" class="icon-modern"></i> La suppression effacera définitivement :
+    <ul class="mt-2 space-y-1 list-disc list-inside opacity-80">
+      <li>L'établissement et toutes ses informations</li>
+      <li>{% trans "common.see_more" %} les chambres associées</li>
+      <li>{% trans "common.see_more" %} les photos</li>
+      <li>Le calendrier de disponibilités</li>
+    </ul>
+    <p class="mt-2 font-medium">Les réservations existantes ne seront pas supprimées.</p>
+  </div>
+
+  <!-- Confirm form -->
+  <form method="post" class="flex flex-col sm:flex-row gap-3">
+    {% csrf_token %}
+    <button type="submit"
+            class="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-2xl transition-colors">
+      <i data-lucide="trash-2" class="icon-modern"></i> Confirmer la suppression
+    </button>
+    <a href="{% url 'owner:properties' %}"
+       class="flex-1 text-center bg-sand hover:bg-sand-dark text-ink font-semibold py-3 rounded-2xl transition-colors">
+      Annuler
+    </a>
+  </form>
+
+</div>
+{% endblock %}

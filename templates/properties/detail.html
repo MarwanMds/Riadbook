@@ -1,0 +1,289 @@
+{% extends "base.html" %} {% block title %}{{ property.name }} — {{ property.city|translated_name }}{% endblock %} {% block extra_head %}
+{% load i18n %}
+{% load i18n_extras %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% endblock %} {% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+
+    <!-- ══ HEADER ══ -->
+    <div class="mb-6">
+        <div class="flex flex-wrap items-center gap-2 text-xs text-ink/40 mb-2">
+            <a href="/" class="hover:text-terracotta">Accueil</a> /
+            <a href="/search/?city={{ property.city.id }}" class="hover:text-terracotta">{{ property.city|translated_name }}</a> /
+            <span class="text-ink/70">{{ property.name }}</span>
+        </div>
+        <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    {% if property.is_authentic_riad %}
+                    <span class="bg-gold text-white text-xs px-2.5 py-1 rounded-full font-medium"><i data-lucide="sparkles" class="icon-modern"></i> {% trans "property.authentic_riad" %}</span> {% endif %}
+                    <span class="bg-sand text-ink/60 text-xs px-2.5 py-1 rounded-full">
+            {{ property.get_property_type_display }} · {{ property.get_style_display }}
+          </span>
+                </div>
+                <h1 class="font-display text-3xl font-bold text-ink">{{ property.name }}</h1>
+                <p class="text-ink/50 mt-1"><i data-lucide="map-pin" class="icon-modern"></i> {{ property.address }}, {{ property.city|translated_name }}</p>
+            </div>
+            <div class="text-right">
+                {% if property.review_count > 0 %}
+                <div class="flex items-center gap-1 justify-end">
+                    <span class="text-gold text-lg star-icon"><i data-lucide="star" class="icon-modern"></i></span>
+                    <span class="font-bold text-ink text-lg">{{ property.avg_rating }}</span>
+                    <span class="text-ink/40 text-sm">({{ property.review_count }} avis)</span>
+                </div>
+                {% endif %} {% if property.free_cancellation %}
+                <p class="text-zellige text-xs mt-1"><i data-lucide="check" class="icon-modern"></i> {% trans "search.free_cancel" %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ PHOTO GALLERY ══ -->
+    {% with photos=property.photos.all %} {% if photos %}
+    <div class="grid grid-cols-4 grid-rows-2 gap-2 h-80 rounded-2xl overflow-hidden mb-8">
+        <div class="col-span-2 row-span-2 bg-sand">
+            {% with cover=photos|first %}
+            <img src="{{ cover.image.url }}" alt="{{ property.name }}" class="w-full h-full object-cover hover:opacity-95 transition-opacity cursor-pointer" /> {% endwith %}
+        </div>
+        {% for photo in photos|slice:"1:5" %}
+        <div class="bg-sand">
+            <img src="{{ photo.image.url }}" alt="" class="w-full h-full object-cover hover:opacity-95 transition-opacity cursor-pointer" />
+        </div>
+        {% empty %}
+        <div class="bg-sand-dark"></div>
+        <div class="bg-sand-dark"></div>
+        <div class="bg-sand-dark"></div>
+        <div class="bg-sand-dark"></div>
+        {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- ══ LEFT COLUMN ══ -->
+        <div class="lg:col-span-2 space-y-8">
+
+            <!-- Description -->
+            <div>
+                <h2 class="font-display text-xl font-semibold text-ink mb-3">{% trans "property.description" %}</h2>
+                <p class="text-ink/70 leading-relaxed">
+    {% get_current_language as LANG %}
+    {% if LANG == 'ar' and property.description_ar %}{{ property.description_ar }}
+    {% elif LANG == 'en' and property.description_en %}{{ property.description_en }}
+    {% else %}{{ property.description }}{% endif %}
+</p>
+            </div>
+
+            <!-- Amenities -->
+            {% if property.amenities.all %}
+            <div>
+                <h2 class="font-display text-xl font-semibold text-ink mb-3">{% trans "search.amenities" %}</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {% for amenity in property.amenities.all %}
+                    <div class="flex items-center gap-2 p-3 bg-sand rounded-xl text-sm text-ink/70">
+                        <span class="text-terracotta"><i data-lucide="check" class="icon-modern"></i></span> {{ amenity|translated_name }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Rooms -->
+            <div>
+                <h2 class="font-display text-xl font-semibold text-ink mb-3">{% trans "property.rooms" %}</h2>
+                {% if rooms_with_price %}
+                <div class="space-y-3">
+                    {% for item in rooms_with_price %}
+                    <div class="bg-white border border-sand-dark rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-ink">{{ item.room.name }}</h3>
+                            <p class="text-sm text-ink/50 mt-0.5">
+                                {{ item.room.get_bed_type_display }} · {{ item.room.capacity }} personnes max {% if item.room.free_cancellation %}· <span class="text-zellige">{% trans "search.free_cancel" %}</span>{% endif %}
+                            </p>
+                            {% if item.room.description %}
+                            <p class="text-sm text-ink/60 mt-1">{{ item.room.description }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-ink/40">
+                                {% if item.num_nights > 1 %}{{ item.num_nights }} nuits · {% endif %}
+                            </p>
+                            <p class="font-bold text-terracotta text-xl">
+                                {{ item.room.price_per_night }} <span class="text-sm font-normal">MAD/nuit</span>
+                            </p>
+                            {% if item.num_nights > 1 %}
+                            <p class="text-xs text-ink/50">Total : {{ item.total_price }} MAD</p>
+                            {% endif %}
+                            <a href="{% url 'bookings:start' item.room.id %}?check_in={{ check_in|default:'' }}&check_out={{ check_out|default:'' }}&guests={{ guests }}" class="inline-block mt-2 bg-terracotta hover:bg-terracotta-dark text-white
+                        px-5 py-2 rounded-xl text-sm font-medium transition-colors">
+                {% trans "property.book_now" %}
+              </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="bg-sand rounded-2xl p-6 text-center text-ink/40">
+                    <p>Aucune chambre disponible pour ces dates et ce nombre de voyageurs.</p>
+                    <p class="text-sm mt-1">Essayez d'autres dates ou contactez l'établissement.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Map -->
+            {% if property.latitude and property.longitude %}
+            <div>
+                <h2 class="font-display text-xl font-semibold text-ink mb-3">{% trans "property.location" %}</h2>
+                <div id="detail-map" class="h-56 rounded-2xl border border-sand-dark overflow-hidden" data-lat="{{ property.latitude }}" data-lng="{{ property.longitude }}" data-name="{{ property.name }}">
+                </div>
+                <p class="text-sm text-ink/40 mt-2">{{ property.address }}, {{ property.city|translated_name }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Reviews -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-display text-xl font-semibold text-ink">
+                        {% trans "property.reviews" %} {% if property.review_count > 0 %}
+                        <span class="text-gold ml-1 star-icon"><i data-lucide="star" class="icon-modern"></i> {{ property.avg_rating }}</span>
+                        <span class="text-ink/30 text-sm">({{ property.review_count }})</span> {% endif %}
+                    </h2>
+                    {% if property.review_count > 3 %}
+                    <a href="{% url 'reviews:property_reviews' property.id %}"
+                       class="text-sm text-terracotta hover:underline shrink-0">
+                        Voir tous les avis <i data-lucide="arrow-right" class="icon-modern"></i>
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Rating breakdown -->
+                {% if property.review_count > 0 %}
+                <div class="bg-sand rounded-2xl p-4 mb-5 grid grid-cols-1 sm:grid-cols-5 gap-2">
+                    {% for score, count in rating_breakdown.items %}
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-ink/50 w-6 inline-flex items-center gap-0.5">{{ score }}<i data-lucide="star" class="icon-modern"></i></span>
+                        <div class="flex-1 h-1.5 bg-sand-dark rounded-full overflow-hidden">
+                            <div class="h-full bg-gold rounded-full" style="width: {% if property.review_count %}{% widthratio count property.review_count 100 %}{% else %}0{% endif %}%">
+                            </div>
+                        </div>
+                        <span class="text-xs text-ink/40">{{ count }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %} {% if reviews %}
+                <div class="space-y-4">
+                    {% for review in reviews %}
+                    <div class="bg-white border border-sand-dark rounded-2xl p-5">
+                        <div class="flex items-start justify-between gap-3 mb-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-terracotta/20 text-terracotta text-sm
+                            font-semibold flex items-center justify-center">
+                                    {{ review.author.first_name|first|upper }}
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-ink">{{ review.author.full_name }}</p>
+                                    <p class="text-xs text-ink/30">{{ review.created_at|date:"F Y" }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="text-gold text-sm star-icon"><i data-lucide="star" class="icon-modern"></i></span>
+                                <span class="text-sm font-semibold text-ink">{{ review.rating_overall }}</span> {% if review.is_verified %}
+                                <span class="bg-zellige/10 text-zellige text-xs px-2 py-0.5 rounded-full ml-1">
+                  <i data-lucide="check" class="icon-modern"></i> {% trans "property.verified_review" %}
+                </span> {% endif %}
+                            </div>
+                        </div>
+                        {% if review.title %}
+                        <p class="font-medium text-ink text-sm mb-1">{{ review.title }}</p>{% endif %}
+                        <p class="text-sm text-ink/70 leading-relaxed">{{ review.comment }}</p>
+
+                        <!-- Owner reply -->
+                        {% if review.owner_reply %}
+                        <div class="mt-3 pl-4 border-l-2 border-terracotta/30 bg-sand rounded-r-xl p-3">
+                            <p class="text-xs font-medium text-terracotta mb-1">Réponse de l'établissement</p>
+                            <p class="text-sm text-ink/70">{{ review.owner_reply.comment }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-ink/40 text-sm">{% trans "property.no_reviews" %} Soyez le premier à partager votre expérience !</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ══ RIGHT STICKY PANEL ══ -->
+        <div class="lg:col-span-1">
+            <div class="bg-white border border-sand-dark rounded-2xl p-5 sticky top-20">
+                <p class="text-xs text-ink/40 mb-1">À partir de</p>
+                {% with first_room=property.rooms.all|first %} {% if first_room %}
+                <p class="font-display text-2xl font-bold text-terracotta mb-4">
+                    {{ first_room.price_per_night }} MAD
+                    <span class="text-sm font-normal text-ink/40">/nuit</span>
+                </p>
+                {% endif %} {% endwith %}
+
+                <form action="{% url 'properties:detail' property.slug %}" method="get" class="space-y-3">
+                    <input type="hidden" name="city" value="{{ property.city.id }}" />
+                    <div>
+                        <label class="text-xs text-ink/50 mb-1 block">{% trans "booking.checkin" %}</label>
+                        <input type="date" name="check_in" id="panel-check-in" value="{{ check_in|default:'' }}" class="w-full px-3 py-2.5 rounded-xl border border-sand-dark text-sm
+                          focus:outline-none focus:border-terracotta" />
+                    </div>
+                    <div>
+                        <label class="text-xs text-ink/50 mb-1 block">{% trans "booking.checkout" %}</label>
+                        <input type="date" name="check_out" id="panel-check-out" value="{{ check_out|default:'' }}" class="w-full px-3 py-2.5 rounded-xl border border-sand-dark text-sm
+                          focus:outline-none focus:border-terracotta" />
+                    </div>
+                    <div>
+                        <label class="text-xs text-ink/50 mb-1 block">{% trans "home.search_guests" %}</label>
+                        <input type="number" name="guests" value="{{ guests|default:2 }}" min="1" max="30" class="w-full px-3 py-2.5 rounded-xl border border-sand-dark text-sm
+                          focus:outline-none focus:border-terracotta" />
+                    </div>
+                    <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white py-3 rounded-xl
+                         font-medium text-sm transition-colors">
+            {% trans "home.search_button" %}
+          </button>
+                </form>
+
+                <div class="border-t border-sand-dark mt-4 pt-4 space-y-2 text-xs text-ink/40">
+                    {% if property.free_cancellation %}
+                    <p><i data-lucide="check" class="icon-modern"></i> {% trans "search.free_cancel" %}</p>{% endif %}
+                    <p><i data-lucide="check" class="icon-modern"></i> Confirmation par e-mail immédiate</p>
+                    <p><i data-lucide="check" class="icon-modern"></i> Paiement sur place</p>
+                </div>
+
+                <!-- Contact -->
+                <a href="{% url 'traveler:new_conversation' %}?property={{ property.id }}" class="mt-4 block text-center border border-terracotta text-terracotta
+                  py-2.5 rounded-xl text-sm hover:bg-terracotta hover:text-white transition-colors">
+          {% trans "dashboard.messages" %}
+        </a>
+            </div>
+        </div>
+
+    </div>
+    <!-- /grid -->
+</div>
+
+<!-- Leaflet detail map -->
+{% if property.latitude and property.longitude %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var el = document.getElementById('detail-map');
+        var lat = parseFloat(el.dataset.lat);
+        var lng = parseFloat(el.dataset.lng);
+        var name = el.dataset.name;
+        var detailMap = L.map('detail-map').setView([lat, lng], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(detailMap);
+        L.marker([lat, lng]).addTo(detailMap)
+            .bindPopup('<strong>' + name + '</strong>').openPopup();
+        setTimeout(function() {
+            detailMap.invalidateSize();
+        }, 200);
+    });
+</script>
+{% endif %} {% endblock %}

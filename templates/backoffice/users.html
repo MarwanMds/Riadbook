@@ -1,0 +1,83 @@
+{% extends "backoffice/_layout.html" %}
+{% load i18n %}
+{% block title %}Admin — Utilisateurs{% endblock %}
+
+{% block admin_content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="font-display text-2xl text-ink">Utilisateurs</h1>
+</div>
+
+<!-- Filters -->
+<div class="bg-white rounded-2xl border border-sand-dark p-4 mb-6 flex flex-wrap gap-3">
+  <form method="get" class="flex flex-wrap gap-3 w-full">
+    <input type="text" name="q" value="{{ search }}" placeholder="Nom ou email..."
+           class="flex-1 min-w-48 px-4 py-2 rounded-xl border border-sand-dark text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30">
+    <select name="role" class="px-4 py-2 rounded-xl border border-sand-dark text-sm focus:outline-none">
+      <option value="">Tous les rôles</option>
+      <option value="traveler" {% if role == 'traveler' %}selected{% endif %}>Voyageurs</option>
+      <option value="owner"    {% if role == 'owner'    %}selected{% endif %}>Hôteliers</option>
+      <option value="admin"    {% if role == 'admin'    %}selected{% endif %}>Admins</option>
+    </select>
+    <button type="submit" class="bg-terracotta text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-terracotta-dark transition-colors">
+      Filtrer
+    </button>
+    {% if search or role %}
+    <a href="{% url 'backoffice:users' %}" class="text-sm text-ink/50 hover:text-terracotta self-center">Réinitialiser</a>
+    {% endif %}
+  </form>
+</div>
+
+<!-- Table -->
+<div class="bg-white rounded-2xl border border-sand-dark shadow-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-sand-light border-b border-sand-dark">
+      <tr>
+        <th class="text-left px-5 py-3 font-medium text-ink/60">Utilisateur</th>
+        <th class="text-left px-4 py-3 font-medium text-ink/60">Rôle</th>
+        <th class="text-left px-4 py-3 font-medium text-ink/60">Inscrit le</th>
+        <th class="text-left px-4 py-3 font-medium text-ink/60">Statut</th>
+        <th class="text-left px-4 py-3 font-medium text-ink/60">Action</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-sand">
+      {% for u in users %}
+      <tr class="hover:bg-sand-light/50 transition-colors">
+        <td class="px-5 py-3">
+          <div class="font-medium text-ink">{{ u.full_name }}</div>
+          <div class="text-xs text-ink/40">{{ u.email }}</div>
+        </td>
+        <td class="px-4 py-3">
+          {% if u.role == 'admin' %}
+            <span class="text-xs bg-terracotta/10 text-terracotta px-2 py-0.5 rounded-full font-medium">Admin</span>
+          {% elif u.role == 'owner' %}
+            <span class="text-xs bg-zellige/10 text-zellige px-2 py-0.5 rounded-full font-medium">Hôtelier</span>
+          {% else %}
+            <span class="text-xs bg-sand text-ink/60 px-2 py-0.5 rounded-full font-medium">Voyageur</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-3 text-ink/50">{{ u.date_joined|date:"d M Y" }}</td>
+        <td class="px-4 py-3">
+          {% if u.is_active %}
+            <span class="text-xs text-zellige font-medium"><i data-lucide="circle" class="icon-modern fill-current"></i> Actif</span>
+          {% else %}
+            <span class="text-xs text-red-400 font-medium"><i data-lucide="circle" class="icon-modern fill-current"></i> Inactif</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-3">
+          {% if u != request.user %}
+          <form method="post" action="{% url 'backoffice:user_toggle' u.id %}">
+            {% csrf_token %}
+            <button class="text-xs {% if u.is_active %}bg-red-50 text-red-500 hover:bg-red-500 hover:text-white{% else %}bg-zellige/10 text-zellige hover:bg-zellige hover:text-white{% endif %} px-3 py-1 rounded-lg transition-colors">
+              {% if u.is_active %}Désactiver{% else %}Réactiver{% endif %}
+            </button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="px-5 py-10 text-center text-ink/40">Aucun utilisateur trouvé</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

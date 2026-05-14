@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "nav.profile" %}{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-12">
+  <h1 class="font-display text-3xl font-bold text-ink mb-2">{% trans "nav.profile" %}</h1>
+  <p class="text-ink/50 text-sm mb-8">{% blocktrans %}Gérez vos informations personnelles{% endblocktrans %}</p>
+  <div class="bg-white rounded-2xl shadow-sm border border-sand-dark p-8">
+    <form method="post" enctype="multipart/form-data" novalidate class="space-y-5">
+      {% csrf_token %}
+      <div class="flex items-center gap-5 pb-6 border-b border-sand-dark">
+        <div class="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 bg-terracotta">
+          {% if user.avatar %}
+          <img src="{{ user.avatar.url }}" alt="" class="w-full h-full object-cover" />
+          {% else %}
+          <div class="w-full h-full flex items-center justify-center text-white text-2xl font-display">{{ user.first_name|first|upper }}</div>
+          {% endif %}
+        </div>
+        <div>
+          <p class="font-medium text-ink">{{ user.full_name }}</p>
+          <p class="text-xs text-ink/40">{{ user.get_role_display }}</p>
+          <label class="mt-2 inline-block text-xs text-terracotta hover:underline cursor-pointer">
+            {% blocktrans %}Changer la photo{% endblocktrans %}
+            <input type="file" name="avatar" accept="image/*" class="hidden" onchange="this.form.submit()" />
+          </label>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-ink/70 mb-1.5">{% trans "auth.first_name" %}</label>
+          <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}"
+                 class="w-full px-4 py-3 rounded-xl border border-sand-dark bg-sand-light focus:outline-none focus:ring-2 focus:ring-terracotta/30 focus:border-terracotta text-sm" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-ink/70 mb-1.5">{% trans "auth.last_name" %}</label>
+          <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}"
+                 class="w-full px-4 py-3 rounded-xl border border-sand-dark bg-sand-light focus:outline-none focus:ring-2 focus:ring-terracotta/30 focus:border-terracotta text-sm" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-ink/70 mb-1.5">{% trans "booking.phone" %}</label>
+        <input type="tel" name="phone" value="{{ form.phone.value|default:'' }}"
+               class="w-full px-4 py-3 rounded-xl border border-sand-dark bg-sand-light focus:outline-none focus:ring-2 focus:ring-terracotta/30 focus:border-terracotta text-sm" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-ink/70 mb-1.5">{% trans "lang.switch" %}</label>
+        <select name="preferred_language" class="w-full px-4 py-3 rounded-xl border border-sand-dark bg-sand-light focus:outline-none focus:ring-2 focus:ring-terracotta/30 focus:border-terracotta text-sm">
+          <option value="fr" {% if form.preferred_language.value == 'fr' %}selected{% endif %}>🇫🇷 {% trans "lang.fr" %}</option>
+          <option value="ar" {% if form.preferred_language.value == 'ar' %}selected{% endif %}>🇲🇦 {% trans "lang.ar" %}</option>
+          <option value="en" {% if form.preferred_language.value == 'en' %}selected{% endif %}>🇬🇧 {% trans "lang.en" %}</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-ink/70 mb-1.5">{% trans "auth.email" %}</label>
+        <input type="email" value="{{ user.email }}" disabled
+               class="w-full px-4 py-3 rounded-xl border border-sand-dark bg-sand text-ink/40 text-sm cursor-not-allowed" />
+      </div>
+      <div class="pt-2">
+        <button type="submit" class="bg-terracotta hover:bg-terracotta-dark text-white font-medium px-8 py-3 rounded-xl transition-colors text-sm">
+          {% trans "common.save" %}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

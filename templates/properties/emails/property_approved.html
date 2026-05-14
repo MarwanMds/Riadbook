@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #F2E8D9; margin: 0; padding: 20px; }
+    .card { background: white; max-width: 540px; margin: 0 auto; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .header { background: #C0623B; padding: 32px; text-align: center; }
+    .header h1 { color: white; font-size: 22px; margin: 0 0 6px; font-family: Georgia, serif; letter-spacing: 1px; }
+    .header p { color: rgba(255,255,255,0.85); margin: 0; font-size: 13px; }
+    .status-badge { display: inline-block; background: #2ECC71; color: white; padding: 8px 24px; border-radius: 50px; font-size: 14px; font-weight: 700; margin: 24px 0 4px; }
+    .body { padding: 32px; }
+    .body p { color: #444; font-size: 15px; line-height: 1.7; margin: 0 0 16px; }
+    .property-box { background: #FDF6EE; border: 1px solid #E8D5C0; border-radius: 12px; padding: 20px 24px; margin: 24px 0; }
+    .property-box .name { font-size: 18px; font-weight: 700; color: #C0623B; font-family: Georgia, serif; margin: 0 0 4px; }
+    .property-box .city { font-size: 13px; color: #888; }
+    .checklist { list-style: none; padding: 0; margin: 0 0 24px; }
+    .checklist li { font-size: 14px; color: #555; padding: 7px 0; border-bottom: 1px solid #F0EAE0; display: flex; align-items: center; gap: 10px; }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist li::before { content: ""; width: 8px; height: 8px; border-radius: 999px; background: #2ECC71; margin-top: 7px; color: #2ECC71; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+    .btn { display: inline-block; background: #C0623B; color: white; text-decoration: none; padding: 14px 36px; border-radius: 50px; font-size: 15px; font-weight: 600; }
+    .cta-block { text-align: center; margin: 28px 0; }
+    .footer { text-align: center; font-size: 11px; color: #bbb; padding: 20px 16px; border-top: 1px solid #F0EAE0; line-height: 1.7; }
+    .footer a { color: #C0623B; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h1>RiadBook Maroc</h1>
+      <p>Hôtels &amp; Riads au Maroc</p>
+    </div>
+
+    <div class="body">
+      <div style="text-align:center">
+        <div class="status-badge">Établissement Approuvé</div>
+      </div>
+
+      <p>Bonjour <strong>{{ owner.first_name }}</strong>,</p>
+      <p>
+        Bonne nouvelle ! Votre établissement a été examiné et <strong>approuvé</strong> par notre équipe.
+        Il est désormais visible sur la plateforme RiadBook Maroc et accessible aux voyageurs du monde entier.
+      </p>
+
+      <div class="property-box">
+        <div class="name">{{ property.name }}</div>
+        <div class="city">{{ property.city.name }}, Maroc</div>
+      </div>
+
+      <p>Voici ce que vous pouvez faire maintenant :</p>
+      <ul class="checklist">
+        <li>Compléter ou enrichir la description et les photos de votre établissement</li>
+        <li>Configurer vos tarifs, disponibilités et types de chambres</li>
+        <li>Activer votre calendrier de disponibilité pour recevoir des réservations</li>
+        <li>Répondre aux premiers avis de vos clients</li>
+      </ul>
+
+      <div class="cta-block">
+        <a href="{{ site_url }}/owner/dashboard/" class="btn">Accéder à mon espace hôtelier</a>
+      </div>
+
+      <p style="font-size:13px;color:#999;text-align:center;margin:0;">
+        Une question ? Écrivez-nous à <a href="mailto:support@riadbook.ma" style="color:#C0623B;">support@riadbook.ma</a>
+      </p>
+    </div>
+
+    <div class="footer">
+      © 2025 RiadBook Maroc — Tous droits réservés<br>
+      <a href="{{ site_url }}">www.riadbook.ma</a> · <a href="{{ site_url }}/legal/privacy/">Confidentialité</a>
+    </div>
+  </div>
+</body>
+</html>

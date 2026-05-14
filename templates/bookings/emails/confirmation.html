@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #F2E8D9; margin: 0; padding: 20px; }
+    .card { background: white; max-width: 560px; margin: 0 auto; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .header { background: #C0623B; padding: 32px; text-align: center; }
+    .header h1 { color: white; font-size: 22px; margin: 0 0 6px; font-family: Georgia, serif; letter-spacing: 1px; }
+    .header p { color: rgba(255,255,255,0.85); margin: 0; font-size: 13px; }
+    .badge { display: inline-block; background: #2ECC71; color: white; padding: 6px 18px; border-radius: 50px; font-size: 13px; font-weight: 700; margin: 24px 0 4px; letter-spacing: 0.5px; }
+    .body { padding: 32px; }
+    .greeting { font-size: 17px; color: #2c2c2c; margin: 0 0 8px; }
+    .intro { color: #666; font-size: 14px; margin: 0 0 24px; line-height: 1.6; }
+    .ref-box { background: #FDF6EE; border: 1px dashed #C0623B; border-radius: 10px; padding: 14px 20px; margin-bottom: 28px; text-align: center; }
+    .ref-box .label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1px; }
+    .ref-box .ref { font-size: 22px; font-weight: 700; color: #C0623B; font-family: 'Courier New', monospace; letter-spacing: 3px; }
+    .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #C0623B; font-weight: 700; margin: 0 0 12px; }
+    .detail-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    .detail-table td { padding: 10px 14px; font-size: 14px; border-bottom: 1px solid #F0EAE0; }
+    .detail-table td:first-child { color: #888; font-size: 13px; width: 40%; }
+    .detail-table td:last-child { color: #2c2c2c; font-weight: 500; }
+    .price-box { background: #FDF6EE; border-radius: 10px; padding: 16px 20px; margin-bottom: 28px; }
+    .price-row { display: flex; justify-content: space-between; font-size: 14px; color: #666; padding: 4px 0; }
+    .price-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; color: #C0623B; border-top: 2px solid #E8D5C0; margin-top: 10px; padding-top: 10px; }
+    .policy-box { background: #FFF8F5; border-left: 4px solid #C0623B; padding: 14px 16px; border-radius: 0 8px 8px 0; margin-bottom: 28px; font-size: 13px; color: #666; line-height: 1.6; }
+    .cta-block { text-align: center; margin: 28px 0; }
+    .btn { display: inline-block; background: #C0623B; color: white; text-decoration: none; padding: 14px 36px; border-radius: 50px; font-size: 15px; font-weight: 600; }
+    .footer { text-align: center; font-size: 11px; color: #bbb; padding: 20px 16px; border-top: 1px solid #F0EAE0; line-height: 1.7; }
+    .footer a { color: #C0623B; text-decoration: none; }
+    .divider { border: none; border-top: 1px solid #F0EAE0; margin: 0 0 24px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+
+    <!-- HEADER -->
+    <div class="header">
+      <h1>RiadBook Maroc</h1>
+      <p>Hôtels &amp; Riads au Maroc</p>
+    </div>
+
+    <div class="body">
+      <div style="text-align:center">
+        <div class="badge">Réservation Confirmée</div>
+      </div>
+
+      <p class="greeting">Bonjour <strong>{{ booking.guest_first_name }} {{ booking.guest_last_name }}</strong>,</p>
+      <p class="intro">
+        Votre réservation a bien été enregistrée. Vous trouverez ci-dessous le récapitulatif complet de votre séjour.
+        L'établissement vous contactera directement pour finaliser votre arrivée.
+      </p>
+
+      <!-- REFERENCE -->
+      <div class="ref-box">
+        <div class="label">Numéro de réservation</div>
+        <div class="ref">{{ booking.reference }}</div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- PROPERTY DETAILS -->
+      <div class="section-title">Hôtel Établissement</div>
+      <table class="detail-table">
+        <tr>
+          <td>Établissement</td>
+          <td><strong>{{ booking.room.property.name }}</strong></td>
+        </tr>
+        <tr>
+          <td>Chambre / Suite</td>
+          <td>{{ booking.room.name }}</td>
+        </tr>
+        <tr>
+          <td>Ville</td>
+          <td>{{ booking.room.property.city.name }}</td>
+        </tr>
+        <tr>
+          <td>Adresse</td>
+          <td>{{ booking.room.property.address }}</td>
+        </tr>
+      </table>
+
+      <!-- STAY DETAILS -->
+      <div class="section-title">Date Détails du séjour</div>
+      <table class="detail-table">
+        <tr>
+          <td>Arrivée</td>
+          <td><strong>{{ booking.check_in|date:"l d F Y" }}</strong></td>
+        </tr>
+        <tr>
+          <td>Départ</td>
+          <td><strong>{{ booking.check_out|date:"l d F Y" }}</strong></td>
+        </tr>
+        <tr>
+          <td>Durée</td>
+          <td>{{ booking.num_nights }} nuit{{ booking.num_nights|pluralize }}</td>
+        </tr>
+        <tr>
+          <td>Voyageurs</td>
+          <td>
+            {{ booking.num_adults }} adulte{{ booking.num_adults|pluralize }}
+            {% if booking.num_children > 0 %} + {{ booking.num_children }} enfant{{ booking.num_children|pluralize }}{% endif %}
+          </td>
+        </tr>
+      </table>
+
+      <!-- PRICING -->
+      <div class="section-title">Paiement Récapitulatif des tarifs</div>
+      <div class="price-box">
+        <div class="price-row">
+          <span>{{ booking.price_per_night }} MAD × {{ booking.num_nights }} nuit{{ booking.num_nights|pluralize }}</span>
+          <span>{{ booking.total_price }} MAD</span>
+        </div>
+        {% if booking.taxes > 0 %}
+        <div class="price-row">
+          <span>Taxes &amp; frais</span>
+          <span>{{ booking.taxes }} MAD</span>
+        </div>
+        {% endif %}
+        <div class="price-total">
+          <span>Total à régler</span>
+          <span>{{ booking.grand_total }} MAD</span>
+        </div>
+      </div>
+
+      <!-- CANCELLATION POLICY -->
+      <div class="policy-box">
+        <strong>Politique d'annulation :</strong>
+        {% if booking.room.cancellation_policy == "free" %}
+          Annulation <strong>gratuite</strong> — Vous pouvez annuler sans frais avant la date d'arrivée.
+        {% elif booking.room.cancellation_policy == "moderate" %}
+          Annulation <strong>modérée</strong> — Annulation gratuite jusqu'à 5 jours avant l'arrivée.
+        {% elif booking.room.cancellation_policy == "strict" %}
+          Annulation <strong>stricte</strong> — Aucun remboursement possible après confirmation.
+        {% else %}
+          Veuillez contacter l'établissement pour toute demande d'annulation.
+        {% endif %}
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-block">
+        <a href="{{ site_url }}/traveler/bookings/" class="btn">Voir mes réservations</a>
+      </div>
+
+      <p style="font-size:13px;color:#999;text-align:center;margin:0;">
+        Besoin d'aide ? Contactez-nous à <a href="mailto:support@riadbook.ma" style="color:#C0623B;">support@riadbook.ma</a>
+        ou via la messagerie de la plateforme.
+      </p>
+    </div>
+
+    <div class="footer">
+      © 2025 RiadBook Maroc — Tous droits réservés<br>
+      <a href="{{ site_url }}">www.riadbook.ma</a> · <a href="{{ site_url }}/legal/privacy/">Confidentialité</a> · <a href="{{ site_url }}/legal/cgu/">CGU</a><br>
+      <span style="color:#ddd;">Vous recevez cet e-mail car vous avez effectué une réservation sur RiadBook Maroc.</span>
+    </div>
+  </div>
+</body>
+</html>

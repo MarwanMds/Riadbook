@@ -1,0 +1,60 @@
+{% extends "owner/_layout.html" %}
+{% load i18n %}
+{% block title %}{% trans "property.reviews" %}{% endblock %}
+
+{% block owner_content %}
+<div class="mb-6">
+  <h1 class="font-display text-2xl text-ink">{% trans "property.reviews" %}</h1>
+  <p class="text-ink/50 text-sm mt-1">Répondez aux avis approuvés de vos voyageurs</p>
+</div>
+
+<div class="space-y-4">
+  {% for review in reviews %}
+  <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-5">
+    <div class="flex items-start justify-between gap-4 mb-3">
+      <div>
+        <span class="font-semibold text-ink">{{ review.author.full_name }}</span>
+        <span class="text-ink/40 mx-2"><i data-lucide="arrow-right" class="icon-modern"></i></span>
+        <span class="text-ink/70 text-sm">{{ review.property.name }}</span>
+        {% if review.is_verified %}
+        <span class="ml-2 text-xs bg-zellige/10 text-zellige px-2 py-0.5 rounded-full"><i data-lucide="check" class="icon-modern"></i> Séjour vérifié</span>
+        {% endif %}
+      </div>
+      <div class="flex items-center gap-0.5 flex-shrink-0">
+        {% for i in "12345" %}
+        <span class="text-sm star-icon {% if forloop.counter <= review.rating_overall %}star-filled{% else %}star-empty{% endif %}"><i data-lucide="star" class="icon-modern"></i></span>
+        {% endfor %}
+        <span class="text-xs text-ink/40 ml-1">{{ review.rating_overall }}/5</span>
+      </div>
+    </div>
+
+    {% if review.title %}
+    <p class="font-medium text-ink mb-1">{{ review.title }}</p>
+    {% endif %}
+    <p class="text-sm text-ink/70 mb-1">{{ review.comment }}</p>
+    <p class="text-xs text-ink/40 mb-4">{{ review.created_at|date:"d M Y" }}</p>
+
+    <!-- Owner reply -->
+    {% if review.owner_reply %}
+    <div class="bg-sand-light rounded-xl p-4 border-l-4 border-terracotta">
+      <p class="text-xs text-ink/50 mb-1 font-medium">Votre réponse · {{ review.owner_reply.created_at|date:"d M Y" }}</p>
+      <p class="text-sm text-ink">{{ review.owner_reply.body }}</p>
+      <a href="{% url 'owner:review_reply' review.id %}"
+         class="text-xs text-terracotta hover:underline mt-2 inline-block">Modifier la réponse</a>
+    </div>
+    {% else %}
+    <a href="{% url 'owner:review_reply' review.id %}"
+       class="inline-block bg-terracotta/10 text-terracotta hover:bg-terracotta hover:text-white
+              px-4 py-2 rounded-xl text-sm font-medium transition-colors">
+      Répondre à cet avis
+    </a>
+    {% endif %}
+  </div>
+  {% empty %}
+  <div class="bg-white rounded-2xl border border-sand-dark p-12 text-center">
+    <p class="text-4xl mb-3"><i data-lucide="star" class="icon-modern"></i></p>
+    <p class="text-ink/60">Aucun avis approuvé pour le moment.</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

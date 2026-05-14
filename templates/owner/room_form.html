@@ -1,0 +1,55 @@
+{% extends "base.html" %} {% block title %}{% if action == 'edit' %}Modifier{% else %}Ajouter{% endif %} une chambre{% endblock %} {% block content %}
+{% load i18n %}
+<div class="max-w-2xl mx-auto px-4 py-10">
+    <a href="{% url 'owner:rooms' prop.id %}" class="text-sm text-terracotta hover:underline"><i data-lucide="arrow-left" class="icon-modern"></i> Retour aux chambres</a>
+    <h1 class="font-display text-2xl text-ink mt-4 mb-6">{% if action == 'edit' %}Modifier{% else %}Ajouter{% endif %} une chambre</h1>
+    <form method="POST" class="bg-white rounded-2xl shadow-sm border border-sand-dark p-6 space-y-4">
+        {% csrf_token %}
+        <div>
+            <label class="block text-sm font-medium text-ink/70 mb-1">Nom de la chambre *</label>
+            <input type="text" name="name" value="{{ room.name|default:'' }}" required class="w-full border border-sand-dark rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-ink/70 mb-1">Description</label>
+            <textarea name="description" rows="3" class="w-full border border-sand-dark rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-terracotta/40 resize-none">{{ room.description|default:'' }}</textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-ink/70 mb-1">Type de lit</label>
+                <select name="bed_type" class="w-full border border-sand-dark rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+          <option value="single" {% if room.bed_type == 'single' %}selected{% endif %}>Lit simple</option>
+          <option value="double" {% if room.bed_type == 'double' %}selected{% endif %}>Lit double</option>
+          <option value="twin" {% if room.bed_type == 'twin' %}selected{% endif %}>Lits jumeaux</option>
+          <option value="suite" {% if room.bed_type == 'suite' %}selected{% endif %}>Suite</option>
+          <option value="dorm" {% if room.bed_type == 'dorm' %}selected{% endif %}>Dortoir</option>
+        </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-ink/70 mb-1">Capacité (pers.) *</label>
+                <input type="number" name="capacity" value="{{ room.capacity|default:2 }}" min="1" max="20" required class="w-full border border-sand-dark rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-ink/70 mb-1">Prix / {% trans "property.per_night" %} (MAD) *</label>
+                <input type="number" name="price_per_night" value="{{ room.price_per_night|default:'' }}" min="0" step="0.01" required class="w-full border border-sand-dark rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-ink/70 mb-1">Délai annulation (heures)</label>
+                <input type="number" name="cancellation_deadline" value="{{ room.cancellation_deadline|default:0 }}" min="0" class="w-full border border-sand-dark rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-terracotta/40">
+            </div>
+        </div>
+        <div class="flex gap-6">
+            <label class="flex items-center gap-2 text-sm font-medium cursor-pointer">
+        <input type="checkbox" name="free_cancellation" {% if room.free_cancellation %}checked{% endif %} class="accent-terracotta w-4 h-4">
+        Annulation gratuite
+      </label> {% if action == 'edit' %}
+            <label class="flex items-center gap-2 text-sm font-medium cursor-pointer">
+        <input type="checkbox" name="is_active" {% if room.is_active %}checked{% endif %} class="accent-terracotta w-4 h-4">
+        Chambre active
+      </label> {% endif %}
+        </div>
+        <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-4 rounded-2xl transition-colors">
+      {% if action == 'edit' %}<i data-lucide="save" class="icon-pill"></i> Enregistrer{% else %}<i data-lucide="plus-circle" class="icon-pill"></i> Ajouter la chambre{% endif %}
+    </button>
+    </form>
+</div>
+{% endblock %}

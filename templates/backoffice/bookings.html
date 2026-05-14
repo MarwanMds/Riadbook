@@ -1,0 +1,75 @@
+{% extends "backoffice/_layout.html" %}
+{% load i18n %}
+{% load i18n_extras %}
+{% block title %}Admin — Réservations{% endblock %}
+
+{% block admin_content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="font-display text-2xl text-ink">Réservations</h1>
+</div>
+
+<!-- Filters -->
+<div class="bg-white rounded-2xl border border-sand-dark p-4 mb-6 flex flex-wrap gap-3">
+  <form method="get" class="flex flex-wrap gap-3 w-full">
+    <input type="text" name="q" value="{{ search }}" placeholder="Réf., email, nom, établissement..."
+           class="flex-1 min-w-48 px-4 py-2 rounded-xl border border-sand-dark text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30">
+    <select name="status" class="px-4 py-2 rounded-xl border border-sand-dark text-sm focus:outline-none">
+      <option value="">Tous les statuts</option>
+      {% for value, label in status_choices %}
+      <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="bg-terracotta text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-terracotta-dark transition-colors">
+      Filtrer
+    </button>
+  </form>
+</div>
+
+<!-- Table -->
+<div class="bg-white rounded-2xl border border-sand-dark shadow-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-sand-light border-b border-sand-dark">
+      <tr>
+        <th class="text-left px-5 py-3 font-medium text-ink/60">Référence</th>
+        <th class="text-left px-4 py-3 font-medium text-ink/60">Voyageur</th>
+        <th class="text-left px-4 py-3 font-medium text-ink/60">Établissement</th>
+        <th class="text-left px-4 py-3 font-medium text-ink/60">Dates</th>
+        <th class="text-left px-4 py-3 font-medium text-ink/60">Total</th>
+        <th class="text-left px-4 py-3 font-medium text-ink/60">Statut</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-sand">
+      {% for booking in bookings %}
+      <tr class="hover:bg-sand-light/50 transition-colors">
+        <td class="px-5 py-3 font-mono text-xs text-ink/60">{{ booking.reference }}</td>
+        <td class="px-4 py-3">
+          <div class="font-medium text-ink">{{ booking.guest_first_name }} {{ booking.guest_last_name }}</div>
+          <div class="text-xs text-ink/40">{{ booking.guest_email }}</div>
+        </td>
+        <td class="px-4 py-3 text-ink/70">{{ booking.room.property.name }}</td>
+        <td class="px-4 py-3 text-ink/60 text-xs">
+          {{ booking.check_in|date:"d M" }} <i data-lucide="arrow-right" class="icon-modern"></i> {{ booking.check_out|date:"d M Y" }}
+          <div class="text-ink/40">{{ booking.num_nights }}n · {{ booking.num_adults }}p</div>
+        </td>
+        <td class="px-4 py-3 font-semibold text-terracotta">{{ booking.grand_total }} MAD</td>
+        <td class="px-4 py-3">
+          {% if booking.status == 'confirmed' %}
+            <span class="text-xs bg-zellige/10 text-zellige px-2 py-0.5 rounded-full">{{ booking|status_label }}</span>
+          {% elif booking.status == 'cancelled' %}
+            <span class="text-xs bg-red-100 text-red-500 px-2 py-0.5 rounded-full">{{ booking|status_label }}</span>
+          {% elif booking.status == 'completed' %}
+            <span class="text-xs bg-sand text-ink/50 px-2 py-0.5 rounded-full">{{ booking|status_label }}</span>
+          {% elif booking.status == 'pending' %}
+            <span class="text-xs bg-gold/10 text-gold-dark px-2 py-0.5 rounded-full">{{ booking|status_label }}</span>
+          {% else %}
+            <span class="text-xs bg-sand text-ink/40 px-2 py-0.5 rounded-full">{{ booking.get_status_display }}</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="px-5 py-10 text-center text-ink/40">Aucune réservation trouvée</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

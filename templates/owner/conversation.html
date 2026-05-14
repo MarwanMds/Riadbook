@@ -1,0 +1,81 @@
+{% extends "owner/_layout.html" %} {% block title %}{{ conversation.subject }}{% endblock %} {% block owner_content %}
+{% load i18n %}
+<div class="max-w-3xl">
+
+    <!-- Header -->
+    <div class="flex items-center gap-3 mb-6">
+        <a href="{% url 'owner:messaging' %}" class="w-9 h-9 rounded-full bg-sand flex items-center justify-center hover:bg-sand-dark transition text-ink font-medium">
+      <i data-lucide="arrow-left" class="icon-modern"></i>
+    </a>
+        <div class="flex-1">
+            <h1 class="font-display text-xl text-ink">{{ conversation.subject }}</h1>
+            <div class="flex items-center gap-2 mt-0.5 text-xs text-ink/50">
+                <span>De : <strong class="text-ink">{{ conversation.traveler.get_full_name }}</strong></span> {% if conversation.property %}
+                <span>·</span>
+                <span><i data-lucide="landmark" class="icon-modern"></i> {{ conversation.property.name }}</span> {% endif %}
+                <span>·</span>
+                <span class="px-2 py-0.5 rounded-full
+          {% if conversation.status == 'open' %}bg-green-100 text-green-700
+          {% elif conversation.status == 'closed' %}bg-gray-100 text-gray-500
+          {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+          {% if conversation.status == 'open' %}Ouvert
+          {% elif conversation.status == 'closed' %}Fermé
+          {% else %}En attente{% endif %}
+        </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat thread -->
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm overflow-hidden mb-4">
+
+        <!-- Messages — uses chat_messages, NOT messages -->
+        <div class="p-6 space-y-4 min-h-[300px] max-h-[500px] overflow-y-auto" id="messages-container">
+            {% for msg in chat_messages %}
+            <div class="flex {% if msg.sender_type == 'owner' %}justify-end{% else %}justify-start{% endif %}">
+                <div class="max-w-[75%]">
+                    <p class="text-xs text-ink/40 mb-1 {% if msg.sender_type == 'owner' %}text-right{% endif %}">
+                        {% if msg.sender_type == 'owner' %}Vous {% else %}{{ conversation.traveler.first_name }}{% endif %} · {{ msg.created_at|date:"d/m/Y H:i" }}
+                    </p>
+                    <div class="px-4 py-3 rounded-2xl text-sm leading-relaxed
+            {% if msg.sender_type == 'owner' %}
+              bg-zellige text-white rounded-br-sm
+            {% else %}
+              bg-sand text-ink rounded-bl-sm
+            {% endif %}">
+                        {{ msg.body|linebreaksbr }}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-10 text-ink/40">
+                <p>Aucun message dans cette conversation.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Reply box -->
+        {% if conversation.status != 'closed' %}
+        <div class="border-t border-sand-dark p-4">
+            <form method="post" class="flex items-end gap-3">
+                {% csrf_token %}
+                <textarea name="body" rows="3" required placeholder="Répondre au voyageur…" class="flex-1 border border-sand-dark rounded-xl px-4 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-zellige/30 bg-white"></textarea>
+                <button type="submit" class="shrink-0 bg-zellige text-white px-5 py-2.5 rounded-xl font-medium hover:bg-zellige-dark transition text-sm">
+          Envoyer
+        </button>
+            </form>
+        </div>
+        {% else %}
+        <div class="border-t border-sand-dark p-4 text-center text-sm text-ink/40">
+            Cette conversation est fermée.
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+    const c = document.getElementById('messages-container');
+    if (c) c.scrollTop = c.scrollHeight;
+</script>
+{% endblock %}

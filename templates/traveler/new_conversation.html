@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "common.save" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-10">
+
+  <!-- Breadcrumb -->
+  <div class="flex items-center gap-2 text-sm text-ink/50 mb-6">
+    <a href="{% url 'traveler:messaging' %}" class="hover:text-terracotta transition">Messages</a>
+    <span>›</span>
+    <span class="text-ink">{% trans "common.save" %}</span>
+  </div>
+
+  <h1 class="font-display text-3xl text-ink mb-8">{% trans "common.save" %}</h1>
+
+  <!-- Error messages -->
+  {% if messages %}
+  {% for msg in messages %}
+  {% if msg.tags == 'error' %}
+  <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 mb-6 text-sm">
+    {{ msg }}
+  </div>
+  {% endif %}
+  {% endfor %}
+  {% endif %}
+
+  <form method="post" class="space-y-5">
+    {% csrf_token %}
+
+    <!-- Property (optional) -->
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-6">
+      <label for="property_id" class="block text-sm font-medium text-ink mb-2">
+        Établissement concerné
+        <span class="text-ink/40 font-normal">(optionnel)</span>
+      </label>
+      <select name="property_id" id="property_id"
+              class="w-full border border-sand-dark rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/30">
+        <option value="">— Question générale —</option>
+        {% for prop in properties %}
+        <option value="{{ prop.pk }}">{{ prop.name }} — {{ prop.city.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Subject -->
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-6">
+      <label for="subject" class="block text-sm font-medium text-ink mb-2">
+        Sujet <span class="text-terracotta">*</span>
+      </label>
+      <input type="text" name="subject" id="subject" required
+             placeholder="Ex : Question sur ma réservation, demande spéciale…"
+             class="w-full border border-sand-dark rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/30">
+    </div>
+
+    <!-- Message body -->
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm p-6">
+      <label for="body" class="block text-sm font-medium text-ink mb-2">
+        Message <span class="text-terracotta">*</span>
+      </label>
+      <textarea name="body" id="body" rows="6" required
+                placeholder="Décrivez votre demande en détail…"
+                class="w-full border border-sand-dark rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-none"></textarea>
+    </div>
+
+    <!-- Info note -->
+    <div class="flex items-start gap-3 bg-sand-light rounded-xl p-4 text-sm text-ink/60">
+      <span class="text-lg shrink-0"><i data-lucide="info" class="icon-modern"></i></span>
+      <p>Notre équipe vous répond généralement dans les 24h. Support disponible 7j/7 de 8h à 22h.</p>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-between">
+      <a href="{% url 'traveler:messaging' %}" class="text-sm text-ink/50 hover:text-ink transition">
+        <i data-lucide="arrow-left" class="icon-modern"></i> Annuler
+      </a>
+      <button type="submit"
+              class="bg-terracotta text-white px-8 py-3 rounded-xl font-medium hover:bg-terracotta-dark transition">
+        Envoyer le message
+      </button>
+    </div>
+
+  </form>
+</div>
+{% endblock %}

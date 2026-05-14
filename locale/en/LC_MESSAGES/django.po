@@ -1,0 +1,379 @@
+# English translations for RiadBook Maroc
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# ── Navigation ──
+msgid "nav.home"
+msgstr "Home"
+
+msgid "nav.search"
+msgstr "Search"
+
+msgid "nav.riads"
+msgstr "Moroccan Riads"
+
+msgid "nav.backoffice"
+msgstr "Back-office"
+
+msgid "nav.my_establishment"
+msgstr "My Property"
+
+msgid "nav.my_space"
+msgstr "My Space"
+
+msgid "nav.profile"
+msgstr "My Profile"
+
+msgid "nav.logout"
+msgstr "Log out"
+
+msgid "nav.login"
+msgstr "Log in"
+
+msgid "nav.register"
+msgstr "Sign up"
+
+# ── Language switcher ──
+msgid "lang.switch"
+msgstr "Language"
+
+msgid "lang.fr"
+msgstr "Français"
+
+msgid "lang.ar"
+msgstr "العربية"
+
+msgid "lang.en"
+msgstr "English"
+
+# ── Homepage ──
+msgid "home.hero_title"
+msgstr "Discover authentic Morocco"
+
+msgid "home.hero_subtitle"
+msgstr "Book the finest riads and hotels in Morocco in just a few clicks"
+
+msgid "home.search_placeholder_city"
+msgstr "City or region"
+
+msgid "home.search_checkin"
+msgstr "Check-in"
+
+msgid "home.search_checkout"
+msgstr "Check-out"
+
+msgid "home.search_guests"
+msgstr "Guests"
+
+msgid "home.search_button"
+msgstr "Search"
+
+msgid "home.featured_riads"
+msgstr "Featured Riads"
+
+msgid "home.popular_cities"
+msgstr "Popular Cities"
+
+msgid "home.why_riadbook"
+msgstr "Why RiadBook?"
+
+msgid "home.authentic_label"
+msgstr "Authentic properties"
+
+msgid "home.authentic_desc"
+msgstr "Certified riads and carefully selected hotels"
+
+msgid "home.secure_booking"
+msgstr "Secure booking"
+
+msgid "home.secure_desc"
+msgstr "Simple 2-step process, confirmation by email"
+
+msgid "home.local_support"
+msgstr "Local support 7 days/week"
+
+msgid "home.local_desc"
+msgstr "A Moroccan team available from 8am to 10pm"
+
+# ── Search ──
+msgid "search.title"
+msgstr "Search results"
+
+msgid "search.filters"
+msgstr "Filters"
+
+msgid "search.price_range"
+msgstr "Price per night"
+
+msgid "search.type"
+msgstr "Property type"
+
+msgid "search.rating"
+msgstr "Rating"
+
+msgid "search.amenities"
+msgstr "Amenities"
+
+msgid "search.style"
+msgstr "Style"
+
+msgid "search.free_cancel"
+msgstr "Free cancellation only"
+
+msgid "search.no_results"
+msgstr "No properties found"
+
+msgid "search.results_count"
+msgstr "property found"
+
+msgid "search.sort_by"
+msgstr "Sort by"
+
+msgid "search.sort_price_asc"
+msgstr "Price: low to high"
+
+msgid "search.sort_price_desc"
+msgstr "Price: high to low"
+
+msgid "search.sort_rating"
+msgstr "Highest rated"
+
+# ── Property types ──
+msgid "type.riad"
+msgstr "Riad"
+
+msgid "type.hotel"
+msgstr "Hotel"
+
+msgid "type.guesthouse"
+msgstr "Guest House"
+
+# ── Amenities ──
+msgid "amenity.wifi"
+msgstr "Wi-Fi"
+
+msgid "amenity.pool"
+msgstr "Swimming pool"
+
+msgid "amenity.spa"
+msgstr "Spa"
+
+msgid "amenity.hammam"
+msgstr "Hammam"
+
+msgid "amenity.parking"
+msgstr "Parking"
+
+msgid "amenity.breakfast"
+msgstr "Breakfast included"
+
+# ── Property detail ──
+msgid "property.per_night"
+msgstr "per night"
+
+msgid "property.book_now"
+msgstr "Book now"
+
+msgid "property.rooms"
+msgstr "Available rooms"
+
+msgid "property.reviews"
+msgstr "Guest reviews"
+
+msgid "property.location"
+msgstr "Location"
+
+msgid "property.description"
+msgstr "Description"
+
+msgid "property.authentic_riad"
+msgstr "Authentic Riad"
+
+msgid "property.verified_review"
+msgstr "Verified review"
+
+msgid "property.no_reviews"
+msgstr "No reviews yet"
+
+msgid "property.write_review"
+msgstr "Write a review"
+
+# ── Booking ──
+msgid "booking.title"
+msgstr "Complete your booking"
+
+msgid "booking.summary"
+msgstr "Booking summary"
+
+msgid "booking.checkin"
+msgstr "Check-in"
+
+msgid "booking.checkout"
+msgstr "Check-out"
+
+msgid "booking.guests"
+msgstr "Guests"
+
+msgid "booking.nights"
+msgstr "night(s)"
+
+msgid "booking.total"
+msgstr "Total"
+
+msgid "booking.taxes"
+msgstr "Taxes & fees"
+
+msgid "booking.confirm"
+msgstr "Confirm booking"
+
+msgid "booking.cancel"
+msgstr "Cancel"
+
+msgid "booking.status_pending"
+msgstr "Pending"
+
+msgid "booking.status_confirmed"
+msgstr "Confirmed"
+
+msgid "booking.status_cancelled"
+msgstr "Cancelled"
+
+msgid "booking.status_completed"
+msgstr "Completed"
+
+msgid "booking.your_info"
+msgstr "Your information"
+
+msgid "booking.full_name"
+msgstr "Full name"
+
+msgid "booking.email"
+msgstr "Email"
+
+msgid "booking.phone"
+msgstr "Phone number"
+
+msgid "booking.special_requests"
+msgstr "Special requests"
+
+# ── Auth ──
+msgid "auth.login_title"
+msgstr "Log in"
+
+msgid "auth.register_title"
+msgstr "Create an account"
+
+msgid "auth.email"
+msgstr "Email address"
+
+msgid "auth.password"
+msgstr "Password"
+
+msgid "auth.confirm_password"
+msgstr "Confirm password"
+
+msgid "auth.first_name"
+msgstr "First name"
+
+msgid "auth.last_name"
+msgstr "Last name"
+
+msgid "auth.forgot_password"
+msgstr "Forgot your password?"
+
+msgid "auth.no_account"
+msgstr "Don't have an account?"
+
+msgid "auth.have_account"
+msgstr "Already have an account?"
+
+msgid "auth.role_traveler"
+msgstr "Traveler"
+
+msgid "auth.role_owner"
+msgstr "Property owner"
+
+# ── Dashboard ──
+msgid "dashboard.title"
+msgstr "My Space"
+
+msgid "dashboard.upcoming_bookings"
+msgstr "Upcoming bookings"
+
+msgid "dashboard.past_bookings"
+msgstr "Past stays"
+
+msgid "dashboard.favorites"
+msgstr "My favorites"
+
+msgid "dashboard.reviews"
+msgstr "My reviews"
+
+msgid "dashboard.messages"
+msgstr "Messages"
+
+msgid "dashboard.settings"
+msgstr "Settings"
+
+msgid "dashboard.no_bookings"
+msgstr "No bookings yet"
+
+# ── Footer ──
+msgid "footer.tagline"
+msgstr "The reference platform for riads and hotels in Morocco"
+
+msgid "footer.links"
+msgstr "Useful links"
+
+msgid "footer.legal"
+msgstr "Legal information"
+
+msgid "footer.privacy"
+msgstr "Privacy policy"
+
+msgid "footer.terms"
+msgstr "Terms & conditions"
+
+msgid "footer.contact"
+msgstr "Contact"
+
+msgid "footer.copyright"
+msgstr "All rights reserved"
+
+# ── Common ──
+msgid "common.save"
+msgstr "Save"
+
+msgid "common.cancel"
+msgstr "Cancel"
+
+msgid "common.delete"
+msgstr "Delete"
+
+msgid "common.edit"
+msgstr "Edit"
+
+msgid "common.back"
+msgstr "Back"
+
+msgid "common.loading"
+msgstr "Loading..."
+
+msgid "common.see_more"
+msgstr "See more"
+
+msgid "common.show_on_map"
+msgstr "Show on map"
+
+msgid "common.from"
+msgstr "From"
+
+msgid "common.stars"
+msgstr "stars"
+
+msgid "common.guests"
+msgstr "guest(s)"

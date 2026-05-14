@@ -1,0 +1,34 @@
+{% load i18n %}
+<footer class="bg-ink text-sand/70 mt-16">
+    <div class="zellige-divider opacity-40"></div>
+    <div class="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="col-span-1 md:col-span-2">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="text-terracotta text-2xl"><i data-lucide="sparkles" class="icon-modern"></i></span>
+                <span class="font-display font-bold text-xl text-white">Riad<span class="text-terracotta">Book</span> Maroc</span>
+            </div>
+            <p class="text-sm leading-relaxed text-sand/50 max-w-xs">{% trans "footer.tagline" %}</p>
+        </div>
+        <div>
+            <h4 class="font-display text-white text-sm mb-3">{% trans "footer.links" %}</h4>
+            <ul class="space-y-2 text-sm">
+                <li><a href="/search/" class="hover:text-terracotta transition-colors">{% trans "nav.search" %}</a></li>
+                <li><a href="/riads/" class="hover:text-terracotta transition-colors">{% trans "nav.riads" %}</a></li>
+                <li><a href="/faq/" class="hover:text-terracotta transition-colors">FAQ</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-display text-white text-sm mb-3">{% trans "footer.legal" %}</h4>
+            <ul class="space-y-2 text-sm">
+                <li><a href="/accounts/register/" class="hover:text-terracotta transition-colors">{% trans "nav.register" %}</a></li>
+                <li><a href="/accounts/login/" class="hover:text-terracotta transition-colors">{% trans "nav.login" %}</a></li>
+                <li><a href="/owner/register/" class="hover:text-terracotta transition-colors">{% trans "footer.contact" %}</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="border-t border-white/10 py-4 text-center text-xs text-sand/30">
+        © 2025 RiadBook Maroc — {% trans "footer.copyright" %} &nbsp;·&nbsp;
+        <a href="/cgu/" class="hover:text-terracotta">{% trans "footer.terms" %}</a> &nbsp;·&nbsp;
+        <a href="/confidentialite/" class="hover:text-terracotta">{% trans "footer.privacy" %}</a>
+    </div>
+</footer>

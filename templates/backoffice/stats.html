@@ -1,0 +1,103 @@
+{% extends "backoffice/_layout.html" %} {% block title %}Admin — Statistiques{% endblock %} {% block admin_content %}
+{% load i18n %}
+<div class="mb-6">
+    <h1 class="font-display text-2xl text-ink">Statistiques</h1>
+    <p class="text-ink/50 text-sm mt-1">Analyse globale de la plateforme</p>
+</div>
+
+<style>
+    .stat-icon svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+</style>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-sand font-semibold text-ink flex items-center gap-2">
+            <span class="stat-icon w-8 h-8 rounded-xl bg-gold/15 text-gold flex items-center justify-center">
+        <svg viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M5 5H3v3a4 4 0 0 0 4 4"/><path d="M19 5h2v3a4 4 0 0 1-4 4"/></svg>
+      </span> Top établissements
+        </div>
+        <div class="divide-y divide-sand">
+            {% for p in top_properties %}
+            <div class="px-5 py-3 flex items-center justify-between text-sm">
+                <span class="font-medium text-ink">{{ p.room__property__name }}</span>
+                <div class="text-right">
+                    <div class="font-semibold text-terracotta">{{ p.revenue|floatformat:0 }} MAD</div>
+                    <div class="text-xs text-ink/40">{{ p.count }} réservation{% if p.count > 1 %}s{% endif %}</div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="px-5 py-8 text-center text-ink/40 text-sm">Aucune donnée</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-sand font-semibold text-ink flex items-center gap-2">
+            <span class="stat-icon w-8 h-8 rounded-xl bg-zellige/15 text-zellige flex items-center justify-center">
+        <svg viewBox="0 0 24 24"><path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3z"/><path d="M9 3v15"/><path d="M15 6v15"/></svg>
+      </span> Villes populaires
+        </div>
+        <div class="divide-y divide-sand">
+            {% for city in top_cities %}
+            <div class="px-5 py-3 flex items-center justify-between text-sm">
+                <span class="font-medium text-ink">{{ city.room__property__city__name }}</span>
+                <span class="font-bold text-terracotta">{{ city.count }}</span>
+            </div>
+            {% empty %}
+            <div class="px-5 py-8 text-center text-ink/40 text-sm">Aucune donnée</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-sand font-semibold text-ink flex items-center gap-2">
+            <span class="stat-icon w-8 h-8 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </span> Répartition utilisateurs
+        </div>
+        <div class="divide-y divide-sand">
+            {% for u in users_by_role %}
+            <div class="px-5 py-3 flex items-center justify-between text-sm">
+                <span class="font-medium text-ink capitalize">
+          {% if u.role == 'traveler' %}Voyageurs
+          {% elif u.role == 'owner' %}Hôteliers
+          {% else %}Admins{% endif %}
+        </span>
+                <span class="font-bold text-terracotta">{{ u.count }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-sand-dark shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-sand font-semibold text-ink flex items-center gap-2">
+            <span class="stat-icon w-8 h-8 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/></svg>
+      </span> Réservations par mois
+        </div>
+        <div class="divide-y divide-sand max-h-72 overflow-y-auto">
+            {% for m in bookings_by_month %}
+            <div class="px-5 py-3 flex items-center justify-between text-sm">
+                <span class="text-ink/70">{{ m.month|date:"M Y" }}</span>
+                <div class="text-right">
+                    <div class="font-semibold text-terracotta">{{ m.revenue|floatformat:0 }} MAD</div>
+                    <div class="text-xs text-ink/40">{{ m.count }} réservation{% if m.count > 1 %}s{% endif %}</div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="px-5 py-8 text-center text-ink/40 text-sm">Aucune donnée</div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
